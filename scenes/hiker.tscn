@@ -23,10 +23,15 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath(".:hp")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("Model:scale")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [node name="Hiker" type="CharacterBody3D" unique_id=1338685910]
 floor_max_angle = 0.87266463
 script = ExtResource("1_4h8dk")
+climb_drain_per_second = 1.0
+rest_regen_per_second = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=145402664]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -54,3 +59,35 @@ transform = Transform3D(1, 0, 0, 0, 0.93969274, -0.34202015, 0, 0.34202015, 0.93
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1301606775]
 replication_config = SubResource("SceneReplicationConfig_a6841")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=780226716]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD" unique_id=634338007]
+custom_minimum_size = Vector2(300, 0)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+
+[node name="HPLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1754277450]
+unique_name_in_owner = true
+layout_mode = 2
+text = "HP"
+
+[node name="HPBar" type="ProgressBar" parent="HUD/VBoxContainer" unique_id=690701719]
+unique_name_in_owner = true
+layout_mode = 2
+show_percentage = false
+
+[node name="StaminaLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1065952174]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Stamina"
+
+[node name="StaminaBar" type="ProgressBar" parent="HUD/VBoxContainer" unique_id=1879388814]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 50.0
+show_percentage = false

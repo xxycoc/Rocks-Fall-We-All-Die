@@ -10,6 +10,7 @@ const MOUNTAIN_SCENE := preload("res://scenes/mountain.tscn")
 @onready var players: Node3D = $Players
 @onready var spawn_points: Node3D = $SpawnPoints
 @onready var lobby = $Lobby
+@onready var player_spawner: MultiplayerSpawner = $PlayerSpawner
 
 var _is_host := false
 var _auto_join := false
@@ -18,6 +19,7 @@ var _spawn_index := 0
 
 
 func _ready() -> void:
+	player_spawner.spawn_function = _spawn_hiker
 	lobby.host_requested.connect(host_game)
 	lobby.join_requested.connect(join_game)
 	multiplayer.connected_to_server.connect(_on_connected)
@@ -92,11 +94,17 @@ func _on_server_disconnected() -> void:
 # ---------- Spawning (host only) ----------
 
 func _add_hiker(id: int) -> void:
-	var hiker := HIKER_SCENE.instantiate()
-	hiker.name = str(id)   # CONTRACT.md: named after the owner's peer ID
-	hiker.position = _next_spawn_position()
-	players.add_child(hiker, true)   # the MultiplayerSpawner copies it to every client
+	# Runs on the host. The spawner calls _spawn_hiker on EVERY machine
+	# with the same data, so everyone starts the hiker in the same spot.
+	player_spawner.spawn({"id": id, "pos": _next_spawn_position()})
 	GameManager.register_hiker(id)
+
+
+func _spawn_hiker(data: Dictionary) -> Node:
+	var hiker := HIKER_SCENE.instantiate()
+	hiker.name = str(data.id)   # CONTRACT.md: named after the owner's peer ID
+	hiker.position = data.pos
+	return hiker
 
 
 func _remove_hiker(id: int) -> void:
