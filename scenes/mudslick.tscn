@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/mudslick.gd" id="1_mud"]
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(6, 1, 6)
+
+[sub_resource type="StandardMaterial3D" id="mud_mat"]
+transparency = 1
+albedo_color = Color(0.35, 0.22, 0.1, 0.85)
+roughness = 0.2
+
+[sub_resource type="PlaneMesh" id="mesh"]
+material = SubResource("mud_mat")
+size = Vector2(6, 6)
+
+[node name="Mudslick" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_mud")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("shape")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("mesh")

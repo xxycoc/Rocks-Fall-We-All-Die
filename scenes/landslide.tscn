@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/landslide.gd" id="1_slide"]
+
+[sub_resource type="StandardMaterial3D" id="warn_mat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.1, 0.05, 0.35)
+
+[sub_resource type="BoxMesh" id="warn_mesh"]
+material = SubResource("warn_mat")
+size = Vector3(1, 3, 6)
+
+[sub_resource type="BoxShape3D" id="wave_shape"]
+size = Vector3(1, 6, 4)
+
+[sub_resource type="StandardMaterial3D" id="dirt_mat"]
+albedo_color = Color(0.4, 0.28, 0.16, 1)
+
+[sub_resource type="BoxMesh" id="block_mesh"]
+material = SubResource("dirt_mat")
+
+[node name="Landslide" type="Node3D"]
+script = ExtResource("1_slide")
+
+[node name="Warning" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mesh = SubResource("warn_mesh")
+
+[node name="Siren" type="AudioStreamPlayer" parent="."]
+
+[node name="Wave" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Wave"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("wave_shape")
+
+[node name="BlockTemplate" type="MeshInstance3D" parent="Wave"]
+visible = false
+mesh = SubResource("block_mesh")
+
+[node name="Rumble" type="AudioStreamPlayer3D" parent="Wave"]

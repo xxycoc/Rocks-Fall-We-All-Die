@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://bw1whqa56ckrd" path="res://scripts/main.gd" id="1_sugp2"]
 [ext_resource type="Script" uid="uid://c3x6llp07jgi7" path="res://scripts/lobby.gd" id="3_jyhfs"]
+[ext_resource type="Script" path="res://scripts/obstacle_spawner.gd" id="9_obst"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_57qmd"]
 
@@ -32,6 +33,10 @@ _spawnable_scenes = PackedStringArray("uid://bwek2lxdrbh0e")
 spawn_path = NodePath("../Players")
 
 [node name="Obstacles" type="Node3D" parent="." unique_id=2057614388]
+
+[node name="ObstacleSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Obstacles")
+script = ExtResource("9_obst")
 
 [node name="SpawnPoints" type="Node3D" parent="." unique_id=1304857624]
 
