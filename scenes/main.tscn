@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://b42gmm0qb5wf"]
+
+[ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://bw1whqa56ckrd" path="res://scripts/main.gd" id="1_sugp2"]
+[ext_resource type="Script" uid="uid://c3x6llp07jgi7" path="res://scripts/lobby.gd" id="3_jyhfs"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_57qmd"]
+
+[sub_resource type="Sky" id="Sky_yf5fn"]
+sky_material = SubResource("ProceduralSkyMaterial_57qmd")
+
+[sub_resource type="Environment" id="Environment_g4v7s"]
+background_mode = 2
+sky = SubResource("Sky_yf5fn")
+
+[node name="Main" type="Node3D" unique_id=602507682]
+script = ExtResource("1_sugp2")
+
+[node name="Greybox" parent="." unique_id=1565114039 instance=ExtResource("1_o5qli")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.64710295, 0, 0.22418451)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1453169006]
+transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.7660444, 0, -0.7660444, 0.6427876, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1763778787]
+environment = SubResource("Environment_g4v7s")
+
+[node name="Players" type="Node3D" parent="." unique_id=1213436099]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2010597362]
+_spawnable_scenes = PackedStringArray("uid://bwek2lxdrbh0e")
+spawn_path = NodePath("../Players")
+
+[node name="Obstacles" type="Node3D" parent="." unique_id=2057614388]
+
+[node name="SpawnPoints" type="Node3D" parent="." unique_id=1304857624]
+
+[node name="Marker3D" type="Marker3D" parent="SpawnPoints" unique_id=1452039435]
+transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0, 0, 1, 0, 1.2289233, 0.6840866)
+
+[node name="Marker3D2" type="Marker3D" parent="SpawnPoints" unique_id=648210287]
+transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0, 0, 1, 5.483268, 1.2289233, 0.6840866)
+
+[node name="Marker3D3" type="Marker3D" parent="SpawnPoints" unique_id=583987611]
+transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0, 0, 1, 10.099714, 1.2289233, 0.6840866)
+
+[node name="Marker3D4" type="Marker3D" parent="SpawnPoints" unique_id=1807348784]
+transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0, 0, 1, -5.679964, 1.2289233, 0.6840866)
+
+[node name="Lobby" type="CanvasLayer" parent="." unique_id=1535337533]
+script = ExtResource("3_jyhfs")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Lobby" unique_id=1489674476]
+custom_minimum_size = Vector2(300, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HostButton" type="Button" parent="Lobby/VBoxContainer" unique_id=1008969333]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Host Game"
+
+[node name="IPEdit" type="LineEdit" parent="Lobby/VBoxContainer" unique_id=379469986]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Insert Host IP"
+
+[node name="JoinButton" type="Button" parent="Lobby/VBoxContainer" unique_id=1434138319]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join Game"
+
+[node name="Status" type="Label" parent="Lobby/VBoxContainer" unique_id=155165596]
+unique_name_in_owner = true
+layout_mode = 2
