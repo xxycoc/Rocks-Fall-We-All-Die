@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_grey"]
+[ext_resource type="PackedScene" path="res://scenes/mountain.tscn" id="2_mtn"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_energy = 0.6
+tonemap_mode = 2
+
+[node name="TestMountain" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Greybox" parent="." instance=ExtResource("1_grey")]
+
+[node name="Obstacles" type="Node3D" parent="."]
+
+[node name="Mountain" parent="." instance=ExtResource("2_mtn")]
