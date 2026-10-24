@@ -449,3 +449,25 @@ func _update_unconscious_body(delta: float) -> void:
 	velocity.z = horizontal.z
 	velocity.y = 0.0 if on_floor else velocity.y - _gravity * delta
 	move_and_slide()
+
+# ---------- New round ----------
+
+## Sent by the host to everyone. Each owner resets their own hiker,
+## and the synchronizer shares the result.
+@rpc("any_peer", "call_local", "reliable")
+func reset_for_round(spawn_pos: Vector3) -> void:
+	carrying = null
+	carried_by = null
+	if not is_multiplayer_authority():
+		return
+	state = "alive"
+	hp = 100
+	stamina = start_stamina
+	velocity = Vector3.ZERO
+	global_position = spawn_pos
+	_last_height = spawn_pos.y
+	knockout_time_left = 0.0
+	_slide_time_left = 0.0
+	_rescue_progress = 0.0
+	if not is_dummy:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

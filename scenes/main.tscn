@@ -128,7 +128,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41.621887, -113.58148)
 mesh = SubResource("CylinderMesh_g4v7s")
 
 [node name="EndScreen" type="CanvasLayer" parent="." unique_id=1184605682]
-layer = 10
+layer = 100
 visible = false
 
 [node name="ColorRect" type="ColorRect" parent="EndScreen" unique_id=1215141997]
@@ -159,3 +159,13 @@ theme_override_font_sizes/font_size = 48
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
+
+[node name="PlayAgainButton" type="Button" parent="EndScreen/VBoxContainer" unique_id=59200177]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Play Again"
+
+[node name="LeaveButton" type="Button" parent="EndScreen/VBoxContainer" unique_id=75692139]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Leave Game"

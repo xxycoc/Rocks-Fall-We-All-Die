@@ -16,6 +16,7 @@ const MOUNTAIN_SCENE := preload("res://scenes/mountain.tscn")
 @onready var extraction_zone: Area3D = $ExtractionZone
 
 @onready var end_screen: CanvasLayer = $EndScreen
+@onready var obstacles: Node3D = $Obstacles
 
 var _is_host := false
 var _auto_join := false
@@ -33,18 +34,24 @@ func _ready() -> void:
 
 	# Test shortcut: Debug > Customize Run Instances, give the first
 	# instance the argument --host and the others --join.
-	var args := OS.get_cmdline_args() + OS.get_cmdline_user_args()
-	print("Launch args: ", args)
-	if "--host" in args:
-		host_game()
-	elif "--join" in args:
-		_auto_join = true
-		join_game("127.0.0.1")
+	if not GameManager.auto_connect_used:
+		GameManager.auto_connect_used = true
+		var args := OS.get_cmdline_args() + OS.get_cmdline_user_args()
+		if "--host" in args:
+			host_game()
+		elif "--join" in args:
+			_auto_join = true
+			join_game("127.0.0.1")
 	kill_zone.body_entered.connect(_on_kill_zone_body_entered)
 	extraction_zone.body_entered.connect(_on_extraction_zone_body_entered)
 
 	GameManager.game_over.connect(_on_game_over)
-
+	%PlayAgainButton.pressed.connect(_restart_round)
+	%LeaveButton.pressed.connect(leave_to_lobby)
+	if GameManager.lobby_message != "":
+		lobby.show_status(GameManager.lobby_message)
+		GameManager.lobby_message = ""
+		
 # ---------- Hosting and joining ----------
 
 func host_game() -> void:
@@ -90,14 +97,8 @@ func _on_connection_failed() -> void:
 	else:
 		lobby.show_status("Couldn't connect. Check the IP and that the host is running.")
 
-
 func _on_server_disconnected() -> void:
-	multiplayer.multiplayer_peer = null
-	for hiker in players.get_children():
-		hiker.queue_free()
-	lobby.show()
-	lobby.show_status("Lost connection to the host.")
-
+	leave_to_lobby("The host left the game.")
 
 # ---------- Spawning (host only) ----------
 
@@ -142,7 +143,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_add_hiker(-_next_dummy)
 		_next_dummy += 1
 	elif event.is_action_pressed("start_round"):
-		GameManager.start_round()
+		_restart_round()
 	elif event.is_action_pressed("debug_damage"):
 		# F10 hits every hiker for 50. Shift+F10 hits only dummies.
 		var dummies_only: bool = event is InputEventKey and event.shift_pressed
@@ -166,3 +167,40 @@ func _on_game_over(winner: String) -> void:
 		GameManager.count_state("extracted"), GameManager.count_state("eliminated")]
 	end_screen.show()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	%PlayAgainButton.visible = multiplayer.is_server()
+	if not multiplayer.is_server():
+		%ResultDetail.text += "\nWaiting for the host to play again..."
+# ---------- New round ----------
+
+## Host only: reset every hiker, clear obstacles, start a fresh round.
+func _restart_round() -> void:
+	if not multiplayer.is_server():
+		return
+	var points := spawn_points.get_children()
+	var i := 0
+	for hiker in players.get_children():
+		var pos := Vector3(0, 2, 0)
+		if not points.is_empty():
+			pos = points[i % points.size()].global_position
+		hiker.reset_for_round.rpc(pos)
+		i += 1
+	for obstacle in obstacles.get_children():
+		obstacle.queue_free()
+	_hide_end_screen.rpc()
+	GameManager.start_round()
+
+# ---------- Leaving ----------
+
+## Disconnect and reload the scene, which brings back a fresh lobby.
+func leave_to_lobby(message: String = "") -> void:
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+	multiplayer.multiplayer_peer = null
+	GameManager.reset()
+	GameManager.lobby_message = message
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_tree().reload_current_scene()
+
+@rpc("authority", "call_local", "reliable")
+func _hide_end_screen() -> void:
+	end_screen.hide()

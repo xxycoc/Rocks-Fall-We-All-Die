@@ -8,6 +8,7 @@ signal hiker_revived(id: int)
 signal hiker_eliminated(id: int)
 signal hiker_extracted(id: int)
 signal game_over(winner: String)  # "hikers" or "mountain"
+signal round_started
 
 const ROUND_TIME := 300.0   # 5 minutes, per CONTRACT.md
 const HIKERS_NEEDED := 2
@@ -17,6 +18,16 @@ var hiker_states: Dictionary = {}
 var round_running := false
 var time_left := ROUND_TIME
 
+## Shown on the lobby screen after returning (e.g. "The host left").
+var lobby_message := ""
+## So --host / --join test arguments only auto-connect once, not after every return to lobby.
+var auto_connect_used := false
+
+
+func reset() -> void:
+	hiker_states.clear()
+	round_running = false
+	time_left = ROUND_TIME
 
 # ---------- Called by main.gd on the host ----------
 
@@ -122,7 +133,7 @@ func _round_started(duration: float) -> void:
 		hiker_states[id] = "alive"
 	time_left = duration
 	round_running = true
-
+	round_started.emit()
 
 @rpc("authority", "call_local", "reliable")
 func _game_over(winner: String) -> void:
