@@ -1,4 +1,13 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/trail.gd" id="1_trail"]
+
+[sub_resource type="Curve3D" id="trail_curve"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0.8, 0.8, 0, 0, 0, 0, 0, 0, 0, 42.1, -112.9),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
 
 [sub_resource type="BoxShape3D" id="shape_a"]
 size = Vector3(40, 2, 41)
@@ -51,6 +60,10 @@ shape = SubResource("shape_c")
 [node name="Mesh" type="MeshInstance3D" parent="Terrain/SegTop"]
 mesh = SubResource("mesh_c")
 surface_material_override/0 = SubResource("mat_rock")
+
+[node name="Trail" type="Path3D" parent="."]
+curve = SubResource("trail_curve")
+script = ExtResource("1_trail")
 
 [node name="Peak" type="Marker3D" parent="."]
 position = Vector3(0, 42, -113)
