@@ -17,6 +17,12 @@ Signals: `hiker_died(id)`, `hiker_revived(id)`, `hiker_eliminated(id)`, `hiker_e
 ## Mountain (P2)
 - `res://scenes/mountain.tscn` holds the camera, controller and HUD. `main.tscn` instances it on the host only (`multiplayer.is_server()`).
 - Obstacles spawn under `main.tscn`'s `Obstacles` node (MultiplayerSpawner added Saturday). Only the host spawns them.
+- The level needs a `Trail` node: a `Path3D` with `res://scripts/trail.gd`, drawn along the middle of the hiking trail,
+  first point at the bottom and last point at the peak. Boulders and landslides follow it downhill and measure the trail's
+  width from the terrain, so they stay on the trail where it winds or narrows. `greybox.tscn` has a straight one.
+  To draw one: add a Path3D named `Trail` under the terrain, attach `trail.gd`, select it, and click points along the trail
+  with the Add Point tool (they snap onto the terrain collision). Without a Trail the boulder uses plain physics and the
+  landslide is disabled.
 
 ## Rules settled for open questions
 - Revived hikers come back with 50 HP.

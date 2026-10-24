@@ -109,13 +109,16 @@ func use_ability(index: int, point: Vector3, normal := Vector3.UP) -> bool:
 		push_warning("No ObstacleSpawner in the current scene.")
 		return false
 	var ability: Dictionary = ABILITIES[index]
+	var trail := Trail.find(get_tree())
+	if index == 2 and trail == null:
+		push_warning("Landslide needs a Trail in the level.")
+		return false
 	if not spend(ability.cost):
 		return false
 	var data := {"type": index, "pos": point, "normal": normal}
 	if index == 2:
-		var band := lane_band(point)
-		data.x_min = band.x
-		data.x_max = band.y
+		data.offset = trail.offset_of(point)
+		data.side = _landslide_side(trail, point, data.offset)
 	spawner.spawn(data)
 	ability_used.emit(index, point)
 	return true
@@ -131,27 +134,9 @@ func raycast_terrain(screen_pos: Vector2) -> Dictionary:
 	return camera.get_world_3d().direct_space_state.intersect_ray(query)
 
 
-## The 2/3 of the lane on the clicked side, as (x_min, x_max).
-## Lane edges are found with downward rays, so this works on any terrain shape.
-func lane_band(point: Vector3) -> Vector2:
-	var left := _lane_edge(point, -1.0)
-	var right := _lane_edge(point, 1.0)
-	var width := (right - left) * 2.0 / 3.0
-	if point.x < (left + right) / 2.0:
-		return Vector2(left, left + width)
-	return Vector2(right - width, right)
-
-
-func _lane_edge(point: Vector3, dir: float) -> float:
-	var space := camera.get_world_3d().direct_space_state
-	var x := point.x
-	for i in 100:  # 0.5 m steps, up to 50 m
-		var from := Vector3(x + dir * 0.5, point.y + 20.0, point.z)
-		var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 40.0, TERRAIN_MASK)
-		if space.intersect_ray(query).is_empty():
-			break
-		x += dir * 0.5
-	return x
+## Which 2/3 of the trail a landslide covers: the half that was clicked.
+func _landslide_side(trail: Trail, point: Vector3, offset: float) -> float:
+	return -1.0 if trail.t_of(point, offset) < 0.5 else 1.0
 
 
 func _spawner() -> MultiplayerSpawner:
@@ -198,9 +183,17 @@ func _update_ghost() -> void:
 		0:
 			ghost.global_transform = Transform3D(Basis(Quaternion(Vector3.UP, hit.normal)), hit.position + hit.normal * 0.06)
 		1:
-			ghost.global_position = hit.position + Vector3.UP * 3.0  # boulder.gd DROP_HEIGHT
+			var pos: Vector3 = hit.position
+			var trail := Trail.find(get_tree())
+			if trail:  # boulder.gd snaps onto the trail
+				var offset := trail.offset_of(pos)
+				pos = trail.across(offset, trail.t_of(pos, offset), 1.2)
+			ghost.global_position = pos + Vector3.UP * (3.0 + 1.2)  # boulder.gd DROP_HEIGHT + RADIUS
 		2:
-			var band := lane_band(hit.position)
-			ghost.scale.x = band.y - band.x
-			ghost.global_position = Vector3((band.x + band.y) / 2.0, hit.position.y + 1.5, hit.position.z)
+			var trail := Trail.find(get_tree())
+			if trail == null:
+				return
+			var offset := trail.offset_of(hit.position)
+			var band := trail.band(offset, _landslide_side(trail, hit.position, offset), 2.0 / 3.0)
+			ghost.global_transform = band.transform.translated(Vector3.UP * 1.5).scaled_local(Vector3(band.width, 1, 1))
 	ghost.show()
