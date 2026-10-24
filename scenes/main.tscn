@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://bw1whqa56ckrd" path="res://scripts/main.gd" id="1_sugp2"]
 [ext_resource type="Script" uid="uid://c3x6llp07jgi7" path="res://scripts/lobby.gd" id="3_jyhfs"]
+[ext_resource type="Texture2D" uid="uid://duauxa6mf12iu" path="res://art/HikersVsMountain StartScreen.png" id="5_tefeu"]
+[ext_resource type="Texture2D" uid="uid://dxhyw131fm2fn" path="res://art/Fake Logo.png" id="6_o6xl0"]
 [ext_resource type="Script" uid="uid://do72k05cpm0qp" path="res://scripts/obstacle_spawner.gd" id="9_obst"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_57qmd"]
@@ -13,6 +15,38 @@ sky_material = SubResource("ProceduralSkyMaterial_57qmd")
 [sub_resource type="Environment" id="Environment_g4v7s"]
 background_mode = 2
 sky = SubResource("Sky_yf5fn")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tefeu"]
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4v7s"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_57qmd"]
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color(0.09019608, 0.61960787, 1, 1)
+border_width_left = 100
+border_width_right = 100
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 size = Vector3(300, 4, 300)
@@ -73,38 +107,137 @@ transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0
 [node name="Lobby" type="CanvasLayer" parent="." unique_id=1535337533]
 script = ExtResource("3_jyhfs")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Lobby" unique_id=1489674476]
-custom_minimum_size = Vector2(300, 0)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+[node name="Menu" type="Control" parent="Lobby" unique_id=1184614983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HostButton" type="Button" parent="Lobby/VBoxContainer" unique_id=1008969333]
+[node name="Background" type="TextureRect" parent="Lobby/Menu" unique_id=387341398]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -7.111084
+offset_top = -7.0
+offset_right = 12.444458
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_tefeu")
+expand_mode = 1
+
+[node name="GameTitle" type="TextureRect" parent="Lobby/Menu" unique_id=1313895541]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 497.0
+offset_top = -5.0
+offset_right = 1303.3945
+offset_bottom = 378.0
+texture = ExtResource("6_o6xl0")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Lobby/Menu" unique_id=1489674476]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -361.99976
+offset_top = -30.999939
+offset_right = -161.99976
+offset_bottom = 101.00006
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(1.3, 1.3)
+
+[node name="HostButton" type="Button" parent="Lobby/Menu/VBoxContainer" unique_id=1008969333]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tefeu")
 text = "Host Game"
 
-[node name="IPEdit" type="LineEdit" parent="Lobby/VBoxContainer" unique_id=379469986]
+[node name="IPEdit" type="LineEdit" parent="Lobby/Menu/VBoxContainer" unique_id=379469986]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Insert Host IP"
 
-[node name="JoinButton" type="Button" parent="Lobby/VBoxContainer" unique_id=1434138319]
+[node name="JoinButton" type="Button" parent="Lobby/Menu/VBoxContainer" unique_id=1134857724]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_tefeu")
 text = "Join Game"
 
-[node name="Status" type="Label" parent="Lobby/VBoxContainer" unique_id=155165596]
+[node name="Status" type="Label" parent="Lobby/Menu/VBoxContainer" unique_id=155165596]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="WaitingCard" type="PanelContainer" parent="Lobby" unique_id=859940785]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(420, 0)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -210.0
+offset_top = 24.0
+offset_right = 210.0
+offset_bottom = 64.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_g4v7s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Lobby/WaitingCard" unique_id=1064428118]
+layout_mode = 2
+
+[node name="WaitTitle" type="Label" parent="Lobby/WaitingCard/VBoxContainer" unique_id=2057677108]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Waiting for hikers..."
+
+[node name="PlayerCount" type="Label" parent="Lobby/WaitingCard/VBoxContainer" unique_id=587709796]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Hikers joined: 0 / 4"
+
+[node name="IPHeading" type="Label" parent="Lobby/WaitingCard/VBoxContainer" unique_id=1850178133]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.35686275, 0.35686275, 0.35686275, 1)
+text = "IP Address to Join Game:"
+
+[node name="IPList" type="Label" parent="Lobby/WaitingCard/VBoxContainer" unique_id=1517845052]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.35686275, 0.35686275, 0.35686275, 1)
+text = "192.168.0.1"
+
+[node name="StartButton" type="Button" parent="Lobby/WaitingCard/VBoxContainer" unique_id=1165171101]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_57qmd")
+text = "Start Climb"
+
+[node name="WaitHint" type="Label" parent="Lobby/WaitingCard/VBoxContainer" unique_id=1794248411]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.35686275, 0.35686275, 0.35686275, 1)
+theme_override_font_sizes/font_size = 13
+text = "Share your IP. Start when everyone is in."
 
 [node name="KillZone" type="Area3D" parent="." unique_id=182541742]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.9406824, 0)
@@ -112,7 +245,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone" unique_id=1382118889]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5598774, 0)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, -1.5598774, 0)
 shape = SubResource("BoxShape3D_g4v7s")
 
 [node name="ExtractionZone" type="Area3D" parent="." unique_id=1766270385]

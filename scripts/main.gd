@@ -51,7 +51,8 @@ func _ready() -> void:
 	if GameManager.lobby_message != "":
 		lobby.show_status(GameManager.lobby_message)
 		GameManager.lobby_message = ""
-		
+	lobby.start_requested.connect(_restart_round)
+
 # ---------- Hosting and joining ----------
 
 func host_game() -> void:
@@ -69,7 +70,7 @@ func host_game() -> void:
 	# locally and never replicated.
 	add_child(MOUNTAIN_SCENE.instantiate())
 
-	lobby.hide()
+	lobby.show_waiting(true)
 	get_window().title = "HOST (Mountain)"
 
 
@@ -84,7 +85,7 @@ func join_game(ip: String) -> void:
 
 
 func _on_connected() -> void:
-	lobby.hide()
+	lobby.show_waiting(false)
 	get_window().title = "Hiker %d" % multiplayer.get_unique_id()
 
 
