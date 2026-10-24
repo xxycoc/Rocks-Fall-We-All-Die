@@ -55,8 +55,7 @@ corner_radius_bottom_left = 20
 size = Vector3(300, 4, 300)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_g4v7s"]
-height = 4.0
-radius = 3.0
+radius = 6.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_57qmd"]
 albedo_color = Color(0.20392157, 1, 1, 1)
@@ -64,9 +63,8 @@ emission_enabled = true
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_g4v7s"]
 material = SubResource("StandardMaterial3D_57qmd")
-top_radius = 3.0
-bottom_radius = 3.0
-height = 4.0
+top_radius = 6.0
+bottom_radius = 6.0
 
 [node name="Main" type="Node3D" unique_id=602507682]
 script = ExtResource("1_sugp2")
@@ -260,6 +258,25 @@ theme_override_colors/font_color = Color(0.35686275, 0.35686275, 0.35686275, 1)
 theme_override_font_sizes/font_size = 13
 text = "Share your IP. Start when everyone is in."
 
+[node name="TimerLabel" type="Label" parent="Lobby" unique_id=1543782015]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(200, 0)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 14.0
+offset_right = 100.0
+offset_bottom = 37.0
+grow_horizontal = 2
+size_flags_horizontal = 8
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 40
+text = "5:00"
+horizontal_alignment = 1
+
 [node name="KillZone" type="Area3D" parent="." unique_id=182541742]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10.390042, 0)
 collision_layer = 0
@@ -270,15 +287,16 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, -1.5598774, 0)
 shape = SubResource("BoxShape3D_g4v7s")
 
 [node name="ExtractionZone" type="Area3D" parent="." unique_id=1766270385]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.756592, 84.91322, -1.5311737)
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ExtractionZone" unique_id=1616674441]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41.622, -113.581)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2320366, 41.880226, -113.581)
 shape = SubResource("CylinderShape3D_g4v7s")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ExtractionZone" unique_id=670780297]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41.621887, -113.58148)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2320366, 41.88011, -113.58148)
 mesh = SubResource("CylinderMesh_g4v7s")
 
 [node name="EndScreen" type="CanvasLayer" parent="." unique_id=1184605682]

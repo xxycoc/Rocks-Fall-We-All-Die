@@ -60,6 +60,14 @@ func show_waiting(is_host: bool) -> void:
 
 
 func _process(_delta: float) -> void:
+	# Round timer: shown while a round is running, for everyone
+	%TimerLabel.visible = GameManager.round_running
+	if %TimerLabel.visible:
+		var secs := int(ceil(GameManager.time_left))
+		%TimerLabel.text = "%d:%02d" % [floori(secs / 60.0), secs % 60]
+		# Turn red in the last 30 seconds
+		%TimerLabel.modulate = Color(1, 0.45, 0.4) if secs <= 30 else Color.WHITE
+
 	if not %WaitingCard.visible:
 		return
 	var count: int = GameManager.hiker_states.size()
@@ -67,6 +75,7 @@ func _process(_delta: float) -> void:
 	%StartButton.disabled = count == 0   # can't start with nobody
 	if %ColorPicker.visible:
 		_update_color_picker()
+
 
 ## This computer's addresses that friends can join with.
 func _local_ips() -> Array[String]:
