@@ -3,6 +3,8 @@ extends CharacterBody3D
 ## Stamina, slide, death and rescue get added on Saturday.
 
 @export var walk_speed := 5.0
+@export var jump_velocity := 5.0   # about 1.3 m high
+@export var jump_cost := 2.0       # stamina per jump
 ## Slopes (strongest when moving straight up or down a steep slope)
 @export var uphill_slow := 0.4      # up to 40% slower uphill
 @export var downhill_boost := 0.5   # up to 50% faster downhill
@@ -45,6 +47,17 @@ extends CharacterBody3D
 @export var body_friction := 6.0       # how quickly a sliding body stops
 @export var body_slope_slide := 1.0    # how much steep slopes pull bodies downhill
 
+## Animation names, exactly as they appear in the .glb
+@export var anim_idle := "Idle"
+@export var anim_walk := "Walk"
+@export var anim_crawl := "Crawl"
+@export var anim_dead := "Dead"
+
+## The animation everyone should see. Set by the owner, synced to others.
+@export var anim_state := "Idle"
+var anim_player: AnimationPlayer = null
+var _body_visual: Node3D = null   # the imported model, tilted to fit slopes when lying down
+
 ## CONTRACT.md: mud sets this to 0.05 on enter and 1.0 on exit.
 var friction_multiplier := 1.0
 ## Synced to everyone by the MultiplayerSynchronizer.
@@ -71,6 +84,26 @@ var carried_by: Node3D = null  # who's dragging me (known on every machine)
 
 @export var rest_delay := 1.0   # seconds of standing still before regen starts
 
+## Looks
+const JACKET_COLORS := [Color("F2C14E"), Color("6FB7FF"), Color("FF8FB1"), Color("9BE07A")]
+## The face texture is a 2x2 grid; each face is a shift of the texture
+const FACE_OFFSETS := {
+	"normal": Vector3(0.0, 0.0, 0.0),
+	"unconscious": Vector3(0.0, 0.5, 0.0),
+	"dead": Vector3(0.5, 0.0, 0.0),
+	"happy": Vector3(0.5, 0.5, 0.0),
+}
+@export var face_material_name := "Material"   # the face's material name in the .glb
+
+## Synced: when it changes on any machine, the jacket recolours.
+@export var jacket_index := 0:
+	set(value):
+		jacket_index = value
+		_apply_jacket()
+
+var _jacket_mat: StandardMaterial3D = null
+var _face_mat: StandardMaterial3D = null
+
 @onready var model: Node3D = $Model
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
@@ -86,6 +119,7 @@ var carried_by: Node3D = null  # who's dragging me (known on every machine)
 
 @onready var rope_point: Marker3D = $Model/RopePoint
 @onready var rope: MeshInstance3D = $Rope
+@onready var drag_point: Marker3D = $Model/DragPoint
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -110,6 +144,14 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	stamina = start_stamina
 	_last_height = global_position.y
+	# Find the model's animations and make the looping ones loop
+	anim_player = model.find_child("AnimationPlayer", true, false)
+	if anim_player:
+		for anim_name in [anim_idle, anim_walk, anim_crawl]:
+			if anim_player.has_animation(anim_name):
+				anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_LINEAR
+		_body_visual = anim_player.get_parent()
+	_setup_looks()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -121,7 +163,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and event.pressed:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
 
 func _physics_process(delta: float) -> void:
 	# Only the owner moves this hiker; everyone else just receives its position.
@@ -138,6 +179,9 @@ func _physics_process(delta: float) -> void:
 		
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
+	if not is_dummy and Input.is_action_just_pressed("jump") and is_on_floor() \
+			and not is_crawling and carrying == null and spend_stamina(jump_cost):
+		velocity.y = jump_velocity
 
 	var input := Vector2.ZERO
 	if not is_dummy:
@@ -262,19 +306,32 @@ func spend_stamina(amount: float) -> bool:
 func _process(_delta: float) -> void:
 	# Visuals run on every machine, using the synced state.
 	# Unconscious = lying on their side. Escaped/eliminated = hidden.
-	var knocked_out := state == "unconscious"
-	model.rotation.z = PI / 2 if knocked_out else 0.0
-	model.position.y = 0.4 if knocked_out else 0.0
-	model.visible = state == "alive" or state == "unconscious"
-	# Escaped or eliminated hikers shouldn't block anyone
-	$CollisionShape3D.disabled = not model.visible
+	# The owner decides the animation; every machine plays it
+	if is_multiplayer_authority():
+		anim_state = _pick_anim()
+	_play_anim(anim_state)
+	
+	# Unconscious and dead bodies lie on the ground. Escaped hikers are hidden.
+	model.visible = state != "extracted"
+	# Dead or escaped hikers shouldn't block anyone
+	$CollisionShape3D.disabled = state == "eliminated" or state == "extracted"
+	_fit_body_to_ground()
 
+	# Face matches the state
+	if _face_mat:
+		var face := "normal"
+		match state:
+			"unconscious": face = "unconscious"
+			"eliminated": face = "dead"
+			"extracted": face = "happy"
+		_face_mat.uv1_offset = FACE_OFFSETS[face]
+		
 	# The dragged hiker draws the rope, since every machine knows carried_by
 	var dragged := is_instance_valid(carried_by)
 	rope.visible = dragged
 	if dragged:
 		var from: Vector3 = carried_by.rope_point.global_position
-		var to := global_position + Vector3.UP * 0.4
+		var to := drag_point.global_position
 		var dist := from.distance_to(to)
 		if dist > 0.05:
 			var b := Basis.looking_at(to - from, Vector3.UP)
@@ -442,7 +499,7 @@ func _update_unconscious_body(delta: float) -> void:
 				horizontal -= dir * away
 		# Turn so the head points toward the carrier
 		if to_me.length() > 0.1:
-			var target_yaw := atan2(-to_me.z, to_me.x)
+			var target_yaw := atan2(to_me.x, to_me.z)
 			model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 8.0 * delta)
 
 	velocity.x = horizontal.x
@@ -471,3 +528,97 @@ func reset_for_round(spawn_pos: Vector3) -> void:
 	_rescue_progress = 0.0
 	if not is_dummy:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+# ---------- Animation ----------
+
+## Owner only: which animation fits what the hiker is doing right now.
+func _pick_anim() -> String:
+	if state == "unconscious" or state == "eliminated":
+		return anim_dead
+	if state != "alive":
+		return anim_idle
+	var moving := Vector2(velocity.x, velocity.z).length() > 0.5
+	if moving:
+		return anim_crawl if is_crawling else anim_walk
+	return anim_idle
+
+
+## Every machine: play it, with a short blend so switches look smooth.
+func _play_anim(anim_name: String) -> void:
+	if anim_player == null:
+		return
+	if not anim_player.has_animation(anim_name):
+		anim_name = anim_idle   # fallback while animations are missing
+	if anim_player.current_animation != anim_name and anim_player.has_animation(anim_name):
+		anim_player.play(anim_name, 0.2)
+
+# ---------- Looks ----------
+
+## Give this hiker its own jacket and face materials, so changing
+## one hiker doesn't change all of them.
+func _setup_looks() -> void:
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		for i in mi.mesh.get_surface_count():
+			var mat: Material = mi.mesh.surface_get_material(i)
+			if mat == null:
+				continue
+			if mat.resource_name == "Color":
+				# One shared copy for the jacket AND the hat
+				if _jacket_mat == null:
+					_jacket_mat = mat.duplicate() as StandardMaterial3D
+				mi.set_surface_override_material(i, _jacket_mat)
+				_apply_jacket()
+			elif mat.resource_name == face_material_name:
+				_face_mat = mat.duplicate() as StandardMaterial3D
+				mi.set_surface_override_material(i, _face_mat)
+
+
+func _apply_jacket() -> void:
+	if _jacket_mat:
+		_jacket_mat.albedo_color = JACKET_COLORS[jacket_index % JACKET_COLORS.size()]
+
+# ---------- Jacket requests (host is the referee) ----------
+
+## A player asks the host for a colour. Runs on the host only.
+@rpc("any_peer", "call_local", "reliable")
+func request_jacket(index: int) -> void:
+	if not multiplayer.is_server():
+		return
+	for hiker in get_tree().get_nodes_in_group("hikers"):
+		if hiker != self and hiker.jacket_index == index:
+			return   # taken: say no
+	# Update the host's copy straight away, so a second request
+	# for the same colour a moment later is refused
+	jacket_index = index
+	_confirm_jacket.rpc(index)
+
+
+## The host says yes. The hiker's owner sets it, which syncs to everyone.
+@rpc("any_peer", "call_local", "reliable")
+func _confirm_jacket(index: int) -> void:
+	if is_multiplayer_authority():
+		jacket_index = index
+
+# ---------- Lying on slopes ----------
+
+## Tilt a lying body to match the slope under it, so it doesn't sink into the hill.
+func _fit_body_to_ground() -> void:
+	if _body_visual == null:
+		return
+	var target := Quaternion.IDENTITY
+	var lift := 0.0
+	if state == "unconscious" or state == "eliminated":
+		# Look straight down under the middle of the body (terrain only, layer 1)
+		var middle := (global_position + drag_point.global_position) / 2.0
+		var query := PhysicsRayQueryParameters3D.create(
+				middle + Vector3.UP * 1.5, middle + Vector3.DOWN * 3.0, 1)
+		var hit := get_world_3d().direct_space_state.intersect_ray(query)
+		if hit:
+			# The slope's "up" direction, as seen from inside Model
+			var ground_up: Vector3 = model.global_basis.inverse() * hit.normal
+			target = Quaternion(Vector3.UP, ground_up.normalized())
+		lift = 0.08
+	# Ease into the tilt so it doesn't snap
+	var t := clampf(10.0 * get_process_delta_time(), 0.0, 1.0)
+	_body_visual.quaternion = _body_visual.quaternion.slerp(target, t)
+	_body_visual.position.y = lerpf(_body_visual.position.y, lift, t)

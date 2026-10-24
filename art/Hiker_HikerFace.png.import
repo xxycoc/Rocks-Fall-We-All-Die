@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://biwcctk64rv57"
-path.s3tc="res://.godot/imported/Mountain_HikerMountain.png-922c57f024bfd384b84cc57d0d05cf11.s3tc.ctex"
+uid="uid://e185ac5ol2uo"
+path.s3tc="res://.godot/imported/Hiker_HikerFace.png-ef5a5aa26017a6f08612bfe956623f12.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "66eba229f5ee6c815f9ea9951d415858"
+"md5": "fabd15d8003c15e5f1ae17a3f1fc2854"
 }
 
 [deps]
 
-source_file="res://art/Mountain_HikerMountain.png"
-dest_files=["res://.godot/imported/Mountain_HikerMountain.png-922c57f024bfd384b84cc57d0d05cf11.s3tc.ctex"]
+source_file="res://art/Hiker_HikerFace.png"
+dest_files=["res://.godot/imported/Hiker_HikerFace.png-ef5a5aa26017a6f08612bfe956623f12.s3tc.ctex"]
 
 [params]
 

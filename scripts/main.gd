@@ -23,7 +23,6 @@ var _auto_join := false
 var _next_dummy := 1
 var _spawn_index := 0
 
-
 func _ready() -> void:
 	player_spawner.spawn_function = _spawn_hiker
 	lobby.host_requested.connect(host_game)
@@ -106,7 +105,7 @@ func _on_server_disconnected() -> void:
 func _add_hiker(id: int) -> void:
 	# Runs on the host. The spawner calls _spawn_hiker on EVERY machine
 	# with the same data, so everyone starts the hiker in the same spot.
-	player_spawner.spawn({"id": id, "pos": _next_spawn_position()})
+	player_spawner.spawn({"id": id, "pos": _next_spawn_position(), "color": _first_free_color()})
 	GameManager.register_hiker(id)
 
 
@@ -114,6 +113,7 @@ func _spawn_hiker(data: Dictionary) -> Node:
 	var hiker := HIKER_SCENE.instantiate()
 	hiker.name = str(data.id)   # CONTRACT.md: named after the owner's peer ID
 	hiker.position = data.pos
+	hiker.jacket_index = data.get("color", 0)
 	return hiker
 
 
@@ -205,3 +205,13 @@ func leave_to_lobby(message: String = "") -> void:
 @rpc("authority", "call_local", "reliable")
 func _hide_end_screen() -> void:
 	end_screen.hide()
+
+## The first jacket colour nobody is wearing yet.
+func _first_free_color() -> int:
+	var used := {}
+	for hiker in players.get_children():
+		used[hiker.jacket_index] = true
+	for i in 4:
+		if not used.has(i):
+			return i
+	return 0   # more than 4 hikers (e.g. dummies): reuse yellow

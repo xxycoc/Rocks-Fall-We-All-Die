@@ -7,6 +7,9 @@ signal join_requested(ip: String)
 signal start_requested   # NEW: host clicked "Start climb"
 
 const MAX_HIKERS := 4
+const JACKET_COLORS: Array = preload("res://scripts/hiker.gd").JACKET_COLORS
+var _color_buttons: Array[Button] = []
+var _color_styles: Array[StyleBoxFlat] = []
 
 @onready var ip_edit: LineEdit = %IPEdit
 @onready var status_label: Label = %Status
@@ -21,7 +24,7 @@ func _ready() -> void:
 	# NEW
 	%StartButton.pressed.connect(func(): start_requested.emit())
 	GameManager.round_started.connect(func(): %WaitingCard.hide())
-
+	_build_color_picker()
 
 func _on_join_pressed() -> void:
 	var ip := ip_edit.text.strip_edges()
@@ -44,6 +47,9 @@ func show_waiting(is_host: bool) -> void:
 	%IPHeading.visible = is_host
 	%IPList.visible = is_host
 	%StartButton.visible = is_host
+	# Only hikers pick a jacket (the host is the Mountain)
+	%PickLabel.visible = not is_host
+	%ColorPicker.visible = not is_host
 	if is_host:
 		%WaitTitle.text = "Waiting for hikers"
 		%WaitHint.text = "Share your IP. Start when everyone's in."
@@ -59,7 +65,8 @@ func _process(_delta: float) -> void:
 	var count: int = GameManager.hiker_states.size()
 	%PlayerCount.text = "Hikers joined:  %d / %d" % [count, MAX_HIKERS]
 	%StartButton.disabled = count == 0   # can't start with nobody
-
+	if %ColorPicker.visible:
+		_update_color_picker()
 
 ## This computer's addresses that friends can join with.
 func _local_ips() -> Array[String]:
@@ -76,3 +83,56 @@ func _local_ips() -> Array[String]:
 	if all.is_empty():
 		all.append("Not found. Run ipconfig.")
 	return all
+
+# ---------- Jacket picker ----------
+
+func _build_color_picker() -> void:
+	for i in JACKET_COLORS.size():
+		var color: Color = JACKET_COLORS[i]
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(56, 56)
+		button.focus_mode = Control.FOCUS_NONE
+		var normal := _circle(color)
+		button.add_theme_stylebox_override("normal", normal)
+		button.add_theme_stylebox_override("hover", _circle(color.lightened(0.25)))
+		button.add_theme_stylebox_override("pressed", _circle(color.darkened(0.15)))
+		# Taken colours keep their colour; an X is drawn on top instead
+		button.add_theme_stylebox_override("disabled", _circle(color))
+		button.add_theme_font_size_override("font_size", 30)
+		button.add_theme_color_override("font_disabled_color", Color.BLACK)
+		button.pressed.connect(_pick_color.bind(i))
+		%ColorPicker.add_child(button)
+		_color_buttons.append(button)
+		_color_styles.append(normal)
+
+
+func _circle(color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color
+	style.set_corner_radius_all(28)
+	style.border_color = Color.BLACK
+	return style
+
+
+## This player's own hiker (named after their peer ID).
+func _my_hiker() -> Node:
+	return get_node_or_null("../Players/%d" % multiplayer.get_unique_id())
+
+
+func _pick_color(index: int) -> void:
+	var me := _my_hiker()
+	if me:
+		me.request_jacket.rpc_id(1, index)   # ask the host; it refuses if taken
+
+
+func _update_color_picker() -> void:
+	var me = _my_hiker()
+	var taken := {}
+	for hiker in get_tree().get_nodes_in_group("hikers"):
+		if hiker != me:
+			taken[hiker.jacket_index] = true
+	for i in _color_buttons.size():
+		_color_buttons[i].disabled = taken.has(i)
+		_color_buttons[i].text = "X" if taken.has(i) else ""
+		# White ring around your own colour
+		_color_styles[i].set_border_width_all(4 if me and me.jacket_index == i else 0)

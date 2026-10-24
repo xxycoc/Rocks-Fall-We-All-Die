@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dp0hl8hfij6q3"
-path="res://.godot/imported/Mountain.glb-cdbf905f305286a722cdf670b8d49063.scn"
+uid="uid://cjprbajdp8fq8"
+path="res://.godot/imported/BackgroundMountain.glb-de77dc3cdd8a578e010a543e34bb87bf.scn"
 
 [deps]
 
-source_file="res://art/Mountain.glb"
-dest_files=["res://.godot/imported/Mountain.glb-cdbf905f305286a722cdf670b8d49063.scn"]
+source_file="res://art/BackgroundMountain.glb"
+dest_files=["res://.godot/imported/BackgroundMountain.glb-de77dc3cdd8a578e010a543e34bb87bf.scn"]
 
 [params]
 
