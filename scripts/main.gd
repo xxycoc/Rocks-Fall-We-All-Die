@@ -137,8 +137,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("start_round"):
 		GameManager.start_round()
 	elif event.is_action_pressed("debug_damage"):
-		# Hits every hiker for 50, the same way P2's boulders will
+		# F10 hits every hiker for 50. Shift+F10 hits only dummies.
+		var dummies_only: bool = event is InputEventKey and event.shift_pressed
 		for hiker in get_tree().get_nodes_in_group("hikers"):
+			if dummies_only and not hiker.is_dummy:
+				continue
 			hiker.take_damage.rpc(50)
 
 func _on_kill_zone_body_entered(body: Node3D) -> void:

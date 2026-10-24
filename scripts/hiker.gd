@@ -25,6 +25,12 @@ extends CharacterBody3D
 ## Knockout
 @export var knockout_time := 20.0
 
+## Rescue
+@export var rescue_range := 2.0
+@export var rescue_hold_time := 2.0
+@export var rescue_cost := 20.0
+@export var revive_hp := 50
+
 ## CONTRACT.md: mud sets this to 0.05 on enter and 1.0 on exit.
 var friction_multiplier := 1.0
 ## Synced to everyone by the MultiplayerSynchronizer.
@@ -43,6 +49,8 @@ var _slide_direction := Vector3.ZERO
 ## "alive", "unconscious" or "eliminated". Exported so it can be synced.
 @export var state := "alive"
 var knockout_time_left := 0.0
+var _rescue_target: Node3D = null
+var _rescue_progress := 0.0
 
 @export var rest_delay := 1.0   # seconds of standing still before regen starts
 
@@ -56,6 +64,8 @@ var knockout_time_left := 0.0
 @onready var hp_label: Label = %HPLabel
 @onready var stamina_bar: ProgressBar = %StaminaBar
 @onready var stamina_label: Label = %StaminaLabel
+
+@onready var rescue_label: Label = %RescueLabel
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -117,6 +127,10 @@ func _physics_process(delta: float) -> void:
 	var forward := Vector3(-cam_basis.z.x, 0, -cam_basis.z.z).normalized()
 	var right := Vector3(cam_basis.x.x, 0, cam_basis.x.z).normalized()
 	var direction := (right * input.x + forward * -input.y).limit_length(1.0)
+
+	_update_rescue(delta)
+	if _rescue_progress > 0.0:
+		direction = Vector3.ZERO   # stand still while rescuing
 
 	_slide_cooldown_left = max(_slide_cooldown_left - delta, 0.0)
 	if not is_dummy and Input.is_action_just_pressed("slide"):
@@ -228,6 +242,12 @@ func _process(_delta: float) -> void:
 		_:
 			hp_label.text = "HP  %d / 100" % hp
 			
+	rescue_label.visible = state == "alive" and _rescue_target != null
+	if rescue_label.visible:
+		if stamina < rescue_cost:
+			rescue_label.text = "Need %d stamina to rescue" % rescue_cost
+		else:
+			rescue_label.text = "Hold F to rescue  %.1f / %.1f s" % [_rescue_progress, rescue_hold_time]
 # ---------- Slide-Dodge ----------
 
 func _try_slide(direction: Vector3) -> void:
@@ -243,3 +263,40 @@ func _try_slide(direction: Vector3) -> void:
 	_slide_direction = dir.normalized()
 	_slide_time_left = slide_duration
 	_slide_cooldown_left = slide_cooldown
+
+# ---------- Rescue ----------
+
+func _update_rescue(delta: float) -> void:
+	_rescue_target = null if is_dummy else _find_rescue_target()
+	if _rescue_target == null or not Input.is_action_pressed("interact") or stamina < rescue_cost:
+		_rescue_progress = 0.0
+		return
+	_rescue_progress += delta
+	if _rescue_progress >= rescue_hold_time:
+		_rescue_progress = 0.0
+		spend_stamina(rescue_cost)
+		_rescue_target.revive.rpc()
+
+
+## The closest unconscious teammate within range, or null.
+func _find_rescue_target() -> Node3D:
+	var best: Node3D = null
+	var best_dist := rescue_range
+	for hiker in get_tree().get_nodes_in_group("hikers"):
+		if hiker == self or hiker.state != "unconscious":
+			continue
+		var dist := global_position.distance_to(hiker.global_position)
+		if dist <= best_dist:
+			best = hiker
+			best_dist = dist
+	return best
+
+
+## Sent to everyone, but only the downed hiker's owner acts on it.
+@rpc("any_peer", "call_local", "reliable")
+func revive() -> void:
+	if not is_multiplayer_authority() or state != "unconscious":
+		return
+	state = "alive"
+	hp = revive_hp
+	GameManager.report_state.rpc_id(1, name.to_int(), "alive")
