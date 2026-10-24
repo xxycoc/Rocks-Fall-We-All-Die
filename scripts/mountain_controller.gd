@@ -28,6 +28,7 @@ var energy := START_ENERGY
 var cooldown_left := 0.0
 var selected := -1
 var _ghosts: Array[MeshInstance3D] = []
+var _was_active := false
 
 
 func _ready() -> void:
@@ -42,6 +43,17 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	var active := round_active()
+	if active != _was_active:
+		_was_active = active
+		# Every round starts from the same energy, however long the lobby took.
+		energy = START_ENERGY
+		cooldown_left = 0.0
+		energy_changed.emit(energy)
+		cooldown_changed.emit(cooldown_left)
+	if not active:
+		_update_ghost()
+		return
 	if energy < MAX_ENERGY:
 		energy = minf(energy + REGEN_PER_SEC * delta, MAX_ENERGY)
 		energy_changed.emit(energy)
@@ -72,8 +84,13 @@ func select(index: int) -> void:
 	ability_selected.emit(selected)
 
 
+## Abilities only work while a round runs. The offline sandbox has no rounds, so it is always active.
+func round_active() -> bool:
+	return multiplayer.multiplayer_peer is OfflineMultiplayerPeer or GameManager.round_running
+
+
 func can_use(cost: int) -> bool:
-	return cooldown_left <= 0.0 and energy >= cost
+	return round_active() and cooldown_left <= 0.0 and energy >= cost
 
 
 func spend(cost: int) -> bool:

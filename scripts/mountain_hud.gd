@@ -51,6 +51,8 @@ func _refresh() -> void:
 		return
 	_bar.value = controller.energy
 	_energy_label.text = "Energy %d / %d" % [floori(controller.energy), int(MountainController.MAX_ENERGY)]
+	if not controller.round_active():
+		_energy_label.text = "Waiting for the round (Enter to start)"
 	for i in _slots.size():
 		var ability: Dictionary = MountainController.ABILITIES[i]
 		var text := "[%d] %s\nCost %d" % [i + 1, ability.name, ability.cost]
