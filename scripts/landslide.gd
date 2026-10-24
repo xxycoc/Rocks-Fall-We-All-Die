@@ -9,6 +9,8 @@ const BASE_SPEED := 6.0
 const SPEED_PER_METRE := 0.12  # further from the peak = faster
 const DOWNHILL := Vector3.BACK  # the greybox climbs toward -Z
 const BLOCKS_PER_METRE := 1.5
+const DROP_HEIGHT := Vector2(4.0, 9.0)  # blocks start this far above the wave and fall in
+const GRAVITY := 20.0
 const MAX_TIME := 15.0
 const TERRAIN_MASK := 1
 
@@ -17,6 +19,7 @@ var _speed := BASE_SPEED
 var _running := false
 var _elapsed := 0.0
 var _hit := {}
+var _fall := {}  # block -> [rest_y, fall_speed]
 
 @onready var _warning: MeshInstance3D = $Warning
 @onready var _wave: Area3D = $Wave
@@ -70,15 +73,20 @@ func _physics_process(delta: float) -> void:
 		return
 	pos.y = hit.position.y
 	_wave.global_position = pos
-	for block in _wave.get_children():
-		if block is MeshInstance3D and block.visible:
-			block.rotate_x(_speed * delta * 0.5)
+	for block: MeshInstance3D in _fall:
+		block.rotate_x(_speed * delta * 0.5)
+		var f: Array = _fall[block]
+		if block.position.y > f[0]:
+			f[1] += GRAVITY * delta
+			block.position.y = maxf(block.position.y - f[1] * delta, f[0])
 
 
 func _spawn_blocks() -> void:
 	for i in maxi(int(_width * BLOCKS_PER_METRE), 6):
 		var block := _block_template.duplicate() as MeshInstance3D
-		block.position = Vector3(randf_range(-_width / 2.0, _width / 2.0), randf_range(0.5, 2.5), randf_range(-2.0, 2.0))
+		var rest_y := randf_range(0.5, 2.5)
+		block.position = Vector3(randf_range(-_width / 2.0, _width / 2.0), rest_y + randf_range(DROP_HEIGHT.x, DROP_HEIGHT.y), randf_range(-2.0, 2.0))
+		_fall[block] = [rest_y, 0.0]
 		var size := randf_range(0.8, 1.6)
 		block.scale = Vector3.ONE * size
 		block.rotation = Vector3(randf() * TAU, randf() * TAU, 0)
