@@ -22,6 +22,9 @@ extends CharacterBody3D
 @export var slide_duration := 0.4
 @export var slide_cooldown := 2.0
 
+## Knockout
+@export var knockout_time := 20.0
+
 ## CONTRACT.md: mud sets this to 0.05 on enter and 1.0 on exit.
 var friction_multiplier := 1.0
 ## Synced to everyone by the MultiplayerSynchronizer.
@@ -36,6 +39,10 @@ var _still_time := 0.0
 var _slide_time_left := 0.0
 var _slide_cooldown_left := 0.0
 var _slide_direction := Vector3.ZERO
+
+## "alive", "unconscious" or "eliminated". Exported so it can be synced.
+@export var state := "alive"
+var knockout_time_left := 0.0
 
 @export var rest_delay := 1.0   # seconds of standing still before regen starts
 
@@ -90,7 +97,14 @@ func _physics_process(delta: float) -> void:
 	# Only the owner moves this hiker; everyone else just receives its position.
 	if not is_multiplayer_authority():
 		return
-
+		
+	if state != "alive":
+		if state == "unconscious":
+			knockout_time_left -= delta
+			if knockout_time_left <= 0.0:
+				eliminate()
+		return
+		
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 
@@ -143,7 +157,7 @@ func _physics_process(delta: float) -> void:
 ## synchronizer then shares the new HP with everyone.
 @rpc("any_peer", "call_local", "reliable")
 func take_damage(amount: int) -> void:
-	if not is_multiplayer_authority() or hp <= 0:
+	if not is_multiplayer_authority() or state != "alive":
 		return
 	hp = max(hp - amount, 0)
 	print(multiplayer.get_unique_id(), ": hiker ", name, " took ", amount, ", hp now ", hp)
@@ -152,9 +166,19 @@ func take_damage(amount: int) -> void:
 
 
 func _die() -> void:
-	# Placeholder until Saturday (buried mound, 20 s timer, rescue).
-	GameManager.report_state.rpc_id(1, name.to_int(), "buried")
+	state = "unconscious"
+	knockout_time_left = knockout_time
+	_slide_time_left = 0.0
+	velocity = Vector3.ZERO
+	GameManager.report_state.rpc_id(1, name.to_int(), "unconscious")
 
+
+## Also called by the kill zone (step 2).
+func eliminate() -> void:
+	if state == "eliminated":
+		return
+	state = "eliminated"
+	GameManager.report_state.rpc_id(1, name.to_int(), "eliminated")
 # ---------- Stamina ----------
 
 func _update_stamina(delta: float, is_moving: bool) -> void:
@@ -183,14 +207,27 @@ func spend_stamina(amount: float) -> bool:
 	return true
 
 func _process(_delta: float) -> void:
+	# Visuals run on every machine, using the synced state.
+	# Unconscious = lying on their side. Eliminated = hidden.
+	var knocked_out := state == "unconscious"
+	model.rotation.z = PI / 2 if knocked_out else 0.0
+	model.position.y = 0.4 if knocked_out else 0.0
+	model.visible = state != "eliminated"
+
 	if not hud.visible:
 		return
 	hp_bar.value = hp
-	hp_label.text = "HP  %d / 100" % hp
 	stamina_bar.value = stamina
 	stamina_label.text = "Stamina  %d / %d%s" % [stamina, max_stamina, "  (crawling)" if is_crawling else ""]
 	stamina_bar.modulate = Color(1, 0.4, 0.4) if is_crawling else Color(1, 1, 1)
-
+	match state:
+		"unconscious":
+			hp_label.text = "UNCONSCIOUS  %d s left" % ceil(knockout_time_left)
+		"eliminated":
+			hp_label.text = "ELIMINATED"
+		_:
+			hp_label.text = "HP  %d / 100" % hp
+			
 # ---------- Slide-Dodge ----------
 
 func _try_slide(direction: Vector3) -> void:

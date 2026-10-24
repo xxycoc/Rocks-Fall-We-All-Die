@@ -12,7 +12,7 @@ signal game_over(winner: String)  # "hikers" or "mountain"
 const ROUND_TIME := 300.0   # 5 minutes, per CONTRACT.md
 const HIKERS_NEEDED := 2
 
-## id -> "alive" | "buried" | "eliminated" | "extracted"
+## id -> "alive" | "unconscious" | "eliminated" | "extracted"
 var hiker_states: Dictionary = {}
 var round_running := false
 var time_left := ROUND_TIME
@@ -42,7 +42,7 @@ func start_round() -> void:
 # ---------- Called by hikers (from any peer) ----------
 
 ## Hikers report their own state changes to the host:
-##   GameManager.report_state.rpc_id(1, hiker.name.to_int(), "buried")
+##   GameManager.report_state.rpc_id(1, hiker.name.to_int(), "unconscious")
 @rpc("any_peer", "call_local", "reliable")
 func report_state(id: int, state: String) -> void:
 	if not multiplayer.is_server():
@@ -75,7 +75,7 @@ func _check_win() -> void:
 	if not multiplayer.is_server() or not round_running:
 		return
 	var extracted := count_state("extracted")
-	var still_in := count_state("alive") + count_state("buried")
+	var still_in := count_state("alive") + count_state("unconscious")
 	# With fewer than 2 hikers (solo testing) one escape is enough.
 	var needed := mini(HIKERS_NEEDED, hiker_states.size())
 	if needed == 0:
@@ -98,10 +98,10 @@ func _set_state(id: int, state: String) -> void:
 	var old: String = hiker_states.get(id, "")
 	hiker_states[id] = state
 	match state:
-		"buried":
+		"unconscious":
 			hiker_died.emit(id)
 		"alive":
-			if old == "buried":
+			if old == "unconscious":
 				hiker_revived.emit(id)
 		"eliminated":
 			hiker_eliminated.emit(id)

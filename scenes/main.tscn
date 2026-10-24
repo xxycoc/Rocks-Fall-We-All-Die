@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://bw1whqa56ckrd" path="res://scripts/main.gd" id="1_sugp2"]
 [ext_resource type="Script" uid="uid://c3x6llp07jgi7" path="res://scripts/lobby.gd" id="3_jyhfs"]
-[ext_resource type="Script" path="res://scripts/obstacle_spawner.gd" id="9_obst"]
+[ext_resource type="Script" uid="uid://do72k05cpm0qp" path="res://scripts/obstacle_spawner.gd" id="9_obst"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_57qmd"]
 
@@ -13,6 +13,9 @@ sky_material = SubResource("ProceduralSkyMaterial_57qmd")
 [sub_resource type="Environment" id="Environment_g4v7s"]
 background_mode = 2
 sky = SubResource("Sky_yf5fn")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
+size = Vector3(300, 4, 300)
 
 [node name="Main" type="Node3D" unique_id=602507682]
 script = ExtResource("1_sugp2")
@@ -34,7 +37,7 @@ spawn_path = NodePath("../Players")
 
 [node name="Obstacles" type="Node3D" parent="." unique_id=2057614388]
 
-[node name="ObstacleSpawner" type="MultiplayerSpawner" parent="."]
+[node name="ObstacleSpawner" type="MultiplayerSpawner" parent="." unique_id=1053666507]
 spawn_path = NodePath("../Obstacles")
 script = ExtResource("9_obst")
 
@@ -87,3 +90,12 @@ text = "Join Game"
 [node name="Status" type="Label" parent="Lobby/VBoxContainer" unique_id=155165596]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="KillZone" type="Area3D" parent="." unique_id=182541742]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.9406824, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone" unique_id=1382118889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5598774, 0)
+shape = SubResource("BoxShape3D_g4v7s")

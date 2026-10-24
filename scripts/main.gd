@@ -11,6 +11,7 @@ const MOUNTAIN_SCENE := preload("res://scenes/mountain.tscn")
 @onready var spawn_points: Node3D = $SpawnPoints
 @onready var lobby = $Lobby
 @onready var player_spawner: MultiplayerSpawner = $PlayerSpawner
+@onready var kill_zone: Area3D = $KillZone
 
 var _is_host := false
 var _auto_join := false
@@ -35,7 +36,7 @@ func _ready() -> void:
 	elif "--join" in args:
 		_auto_join = true
 		join_game("127.0.0.1")
-
+	kill_zone.body_entered.connect(_on_kill_zone_body_entered)
 
 # ---------- Hosting and joining ----------
 
@@ -135,3 +136,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_next_dummy += 1
 	elif event.is_action_pressed("start_round"):
 		GameManager.start_round()
+	elif event.is_action_pressed("debug_damage"):
+		# Hits every hiker for 50, the same way P2's boulders will
+		for hiker in get_tree().get_nodes_in_group("hikers"):
+			hiker.take_damage.rpc(50)
+
+func _on_kill_zone_body_entered(body: Node3D) -> void:
+	# Each machine detects this, but only the hiker's owner acts on it
+	if body.is_in_group("hikers") and body.is_multiplayer_authority():
+		body.eliminate()
