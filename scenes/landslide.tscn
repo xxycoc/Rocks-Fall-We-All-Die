@@ -27,7 +27,9 @@ script = ExtResource("1_slide")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 mesh = SubResource("warn_mesh")
 
-[node name="Siren" type="AudioStreamPlayer" parent="."]
+[node name="Siren" type="AudioStreamPlayer3D" parent="Warning"]
+unit_size = 40.0
+max_distance = 300.0
 
 [node name="Wave" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
@@ -44,3 +46,5 @@ visible = false
 mesh = SubResource("block_mesh")
 
 [node name="Rumble" type="AudioStreamPlayer3D" parent="Wave"]
+unit_size = 25.0
+max_distance = 200.0

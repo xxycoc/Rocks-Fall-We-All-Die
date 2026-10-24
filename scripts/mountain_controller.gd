@@ -8,6 +8,7 @@ signal energy_changed(energy: float)
 signal ability_selected(index: int)  # -1 = none
 signal cooldown_changed(time_left: float)
 signal ability_used(index: int, point: Vector3)
+signal ability_failed(reason: String)  # shown briefly on the HUD
 
 const MAX_ENERGY := 30.0
 const START_ENERGY := 10.0
@@ -29,6 +30,7 @@ var cooldown_left := 0.0
 var selected := -1
 var _ghosts: Array[MeshInstance3D] = []
 var _was_active := false
+var _last_time_left := 0.0
 
 
 func _ready() -> void:
@@ -44,7 +46,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	var active := round_active()
-	if active != _was_active:
+	# GameManager has no round-start signal. A restart mid-round (Enter) keeps
+	# round_running true but refills the timer, so a jump in time_left is a new round too.
+	var restarted := active and GameManager.time_left > _last_time_left + 1.0
+	_last_time_left = GameManager.time_left
+	if active != _was_active or restarted:
 		_was_active = active
 		# Every round starts from the same energy, however long the lobby took.
 		energy = START_ENERGY
@@ -74,7 +80,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			select(-1)
 		elif mb.button_index == MOUSE_BUTTON_LEFT and selected >= 0:
 			var hit := raycast_terrain(mb.position)
-			if not hit.is_empty():
+			if hit.is_empty():
+				ability_failed.emit("Click on the mountain")
+			else:
 				use_ability(selected, hit.position, hit.normal)
 			get_viewport().set_input_as_handled()
 
@@ -91,6 +99,14 @@ func round_active() -> bool:
 
 func can_use(cost: int) -> bool:
 	return round_active() and cooldown_left <= 0.0 and energy >= cost
+
+
+func _why_not(cost: int) -> String:
+	if not round_active():
+		return "Waiting for the round"
+	if cooldown_left > 0.0:
+		return "Cooling down %.1fs" % cooldown_left
+	return "Need %d energy" % cost
 
 
 func spend(cost: int) -> bool:
@@ -112,8 +128,10 @@ func use_ability(index: int, point: Vector3, normal := Vector3.UP) -> bool:
 	var trail := Trail.find(get_tree())
 	if index == 2 and trail == null:
 		push_warning("Landslide needs a Trail in the level.")
+		ability_failed.emit("No trail in this level")
 		return false
 	if not spend(ability.cost):
+		ability_failed.emit(_why_not(ability.cost))
 		return false
 	var data := {"type": index, "pos": point, "normal": normal}
 	if index == 2:

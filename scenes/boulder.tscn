@@ -49,5 +49,9 @@ monitorable = false
 [node name="Shape" type="CollisionShape3D" parent="HitArea"]
 shape = SubResource("hit_shape")
 
+[node name="Roll" type="AudioStreamPlayer3D" parent="."]
+unit_size = 15.0
+max_distance = 120.0
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("sync")

@@ -14,6 +14,7 @@ func setup(data: Dictionary) -> void:
 
 
 func _ready() -> void:
+	Sfx.play($Splat, "mud_splat")
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	if is_multiplayer_authority():

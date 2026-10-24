@@ -20,6 +20,10 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("1_mud")
 
+[node name="Splat" type="AudioStreamPlayer3D" parent="."]
+unit_size = 10.0
+max_distance = 80.0
+
 [node name="Shape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("shape")

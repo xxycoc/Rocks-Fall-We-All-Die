@@ -27,6 +27,7 @@ func setup(data: Dictionary) -> void:
 
 
 func _ready() -> void:
+	Sfx.play($Roll, "boulder_roll", true)
 	if not is_multiplayer_authority():
 		freeze = true
 		$HitArea.monitoring = false

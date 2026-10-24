@@ -28,7 +28,7 @@ var _fall := {}  # block -> [rest_y, fall_speed, place across the band from -0.5
 @onready var _wave: Area3D = $Wave
 @onready var _shape: CollisionShape3D = $Wave/Shape
 @onready var _block_template: MeshInstance3D = $Wave/BlockTemplate
-@onready var _siren: AudioStreamPlayer = $Siren
+@onready var _siren: AudioStreamPlayer3D = $Warning/Siren
 @onready var _rumble: AudioStreamPlayer3D = $Wave/Rumble
 
 
@@ -54,15 +54,13 @@ func _ready() -> void:
 	_warning.scale.x = width
 	_wave.hide()
 	_wave.monitoring = false
-	if _siren.stream:
-		_siren.play()
+	Sfx.play(_siren, "landslide_siren")
 
 	await get_tree().create_timer(WARNING_TIME).timeout
 	_warning.hide()
 	_spawn_blocks(_place(_wave))
 	_wave.show()
-	if _rumble.stream:
-		_rumble.play()
+	Sfx.play(_rumble, "landslide_rumble", true)
 	_running = true
 	if is_multiplayer_authority():
 		_wave.monitoring = true
