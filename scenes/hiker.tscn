@@ -30,12 +30,21 @@ properties/4/path = NodePath(".:state")
 properties/4/spawn = true
 properties/4/replication_mode = 1
 
+[sub_resource type="BoxMesh" id="BoxMesh_g4v7s"]
+size = Vector3(0.06, 0.06, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yf5fn"]
+albedo_color = Color(0.6338229, 0.46826196, 0.32728684, 1)
+
 [node name="Hiker" type="CharacterBody3D" unique_id=1338685910]
 floor_max_angle = 1.3962634
 script = ExtResource("1_4h8dk")
+walk_speed = 15.0
 uphill_slow = 0.7
 climb_drain_per_second = 1.0
 rest_regen_per_second = 1.0
+carry_speed_multiplier = 0.3
+body_friction = 20.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=145402664]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -50,6 +59,9 @@ mesh = SubResource("CapsuleMesh_yf5fn")
 [node name="BoxMesh" type="MeshInstance3D" parent="Model" unique_id=1604195492]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.4)
 mesh = SubResource("BoxMesh_57qmd")
+
+[node name="RopePoint" type="Marker3D" parent="Model" unique_id=624410137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1244962, 0.3590343)
 
 [node name="CameraPivot" type="Node3D" parent="." unique_id=907226885]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
@@ -109,3 +121,9 @@ unique_name_in_owner = true
 layout_mode = 2
 max_value = 50.0
 show_percentage = false
+
+[node name="Rope" type="MeshInstance3D" parent="." unique_id=1476435215]
+top_level = true
+visible = false
+mesh = SubResource("BoxMesh_g4v7s")
+surface_material_override/0 = SubResource("StandardMaterial3D_yf5fn")

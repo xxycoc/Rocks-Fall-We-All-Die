@@ -35,6 +35,16 @@ extends CharacterBody3D
 @export var rescue_cost := 20.0
 @export var revive_hp := 50
 
+## Carry (drag with a rope)
+@export var carry_drain_per_second := 2.0 / 3.0   # 2 stamina every 3 s
+@export var carry_speed_multiplier := 0.6
+
+@export var rope_length := 2.5
+@export var rope_stiffness := 20.0     # how hard a tight rope pulls
+
+@export var body_friction := 6.0       # how quickly a sliding body stops
+@export var body_slope_slide := 1.0    # how much steep slopes pull bodies downhill
+
 ## CONTRACT.md: mud sets this to 0.05 on enter and 1.0 on exit.
 var friction_multiplier := 1.0
 ## Synced to everyone by the MultiplayerSynchronizer.
@@ -56,6 +66,9 @@ var knockout_time_left := 0.0
 var _rescue_target: Node3D = null
 var _rescue_progress := 0.0
 
+var carrying: Node3D = null    # who I'm dragging
+var carried_by: Node3D = null  # who's dragging me (known on every machine)
+
 @export var rest_delay := 1.0   # seconds of standing still before regen starts
 
 @onready var model: Node3D = $Model
@@ -70,6 +83,9 @@ var _rescue_progress := 0.0
 @onready var stamina_label: Label = %StaminaLabel
 
 @onready var rescue_label: Label = %RescueLabel
+
+@onready var rope_point: Marker3D = $Model/RopePoint
+@onready var rope: MeshInstance3D = $Rope
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -115,6 +131,7 @@ func _physics_process(delta: float) -> void:
 	if state != "alive":
 		if state == "unconscious":
 			knockout_time_left -= delta
+			_update_unconscious_body(delta)
 			if knockout_time_left <= 0.0:
 				eliminate()
 		return
@@ -133,6 +150,10 @@ func _physics_process(delta: float) -> void:
 	var direction := (right * input.x + forward * -input.y).limit_length(1.0)
 
 	_update_rescue(delta)
+	_update_carry()
+	if not is_dummy and Input.is_action_just_pressed("carry"):
+		_toggle_carry()
+	
 	if _rescue_progress > 0.0:
 		direction = Vector3.ZERO   # stand still while rescuing
 
@@ -148,11 +169,13 @@ func _physics_process(delta: float) -> void:
 	else:
 		var speed := crawl_speed if is_crawling else walk_speed
 		speed *= _slope_multiplier(direction)
+		if carrying != null:
+			speed *= carry_speed_multiplier
 		var target := direction * speed
 		var accel := acceleration * friction_multiplier
 		velocity.x = move_toward(velocity.x, target.x, accel * delta)
 		velocity.z = move_toward(velocity.z, target.z, accel * delta)
-
+		
 	# Squash the model while sliding so it looks like a dive
 	model.scale.y = 0.6 if _slide_time_left > 0.0 else 1.0
 	# On mud, the slope pulls you downhill.
@@ -185,6 +208,7 @@ func take_damage(amount: int) -> void:
 
 
 func _die() -> void:
+	_drop()
 	state = "unconscious"
 	knockout_time_left = knockout_time
 	_slide_time_left = 0.0
@@ -194,12 +218,14 @@ func _die() -> void:
 
 ## Also called by the kill zone (step 2).
 func eliminate() -> void:
+	_drop()
 	if state == "eliminated":
 		return
 	state = "eliminated"
 	GameManager.report_state.rpc_id(1, name.to_int(), "eliminated")
 
 func extract() -> void:
+	_drop()
 	if state != "alive":
 		return
 	state = "extracted"
@@ -213,17 +239,18 @@ func _update_stamina(delta: float, is_moving: bool) -> void:
 
 	if is_moving:
 		_still_time = 0.0
+	if carrying != null:
+		stamina -= carry_drain_per_second * delta
 	if is_moving and climb_rate > 0.2:
 		# Walking uphill
 		stamina -= climb_drain_per_second * delta
-	elif not is_moving and is_on_floor():
+	elif not is_moving and is_on_floor() and carrying == null:
 		_still_time += delta
 		if _still_time >= rest_delay:
 			stamina += rest_regen_per_second * delta
-			
+
 	stamina = clamp(stamina, 0.0, max_stamina)
 	is_crawling = stamina <= crawl_threshold
-
 
 ## Other abilities call this. Returns false if there isn't enough stamina.
 func spend_stamina(amount: float) -> bool:
@@ -234,7 +261,7 @@ func spend_stamina(amount: float) -> bool:
 
 func _process(_delta: float) -> void:
 	# Visuals run on every machine, using the synced state.
-	# Unconscious = lying on their side. Eliminated = hidden.
+	# Unconscious = lying on their side. Escaped/eliminated = hidden.
 	var knocked_out := state == "unconscious"
 	model.rotation.z = PI / 2 if knocked_out else 0.0
 	model.position.y = 0.4 if knocked_out else 0.0
@@ -242,6 +269,19 @@ func _process(_delta: float) -> void:
 	# Escaped or eliminated hikers shouldn't block anyone
 	$CollisionShape3D.disabled = not model.visible
 
+	# The dragged hiker draws the rope, since every machine knows carried_by
+	var dragged := is_instance_valid(carried_by)
+	rope.visible = dragged
+	if dragged:
+		var from: Vector3 = carried_by.rope_point.global_position
+		var to := global_position + Vector3.UP * 0.4
+		var dist := from.distance_to(to)
+		if dist > 0.05:
+			var b := Basis.looking_at(to - from, Vector3.UP)
+			b.z *= dist   # stretch the 1 m box to the full length
+			rope.global_transform = Transform3D(b, (from + to) / 2.0)
+
+	# Everything below is this player's own HUD
 	if not hud.visible:
 		return
 	hp_bar.value = hp
@@ -257,13 +297,16 @@ func _process(_delta: float) -> void:
 			hp_label.text = "ESCAPED! Waiting for the others"
 		_:
 			hp_label.text = "HP  %d / 100" % hp
-			
-	rescue_label.visible = state == "alive" and _rescue_target != null
+
+	rescue_label.visible = state == "alive" and (_rescue_target != null or carrying != null)
 	if rescue_label.visible:
-		if stamina < rescue_cost:
-			rescue_label.text = "Need %d stamina to rescue" % rescue_cost
+		if carrying != null:
+			rescue_label.text = "Dragging a teammate · G to let go"
+		elif stamina < rescue_cost:
+			rescue_label.text = "G to drag · need %d stamina to rescue" % rescue_cost
 		else:
-			rescue_label.text = "Hold F to rescue  %.1f / %.1f s" % [_rescue_progress, rescue_hold_time]
+			rescue_label.text = "Hold F to rescue (%.1f / %.1f s) · G to drag" % [_rescue_progress, rescue_hold_time]
+			
 # ---------- Slide-Dodge ----------
 
 func _try_slide(direction: Vector3) -> void:
@@ -334,3 +377,75 @@ func _slope_multiplier(direction: Vector3) -> float:
 	if along > 0.0:
 		return 1.0 + along * downhill_boost
 	return 1.0 + along * uphill_slow
+
+# ---------- Carry ----------
+
+func _toggle_carry() -> void:
+	if carrying != null:
+		_drop()
+		return
+	var target := _find_rescue_target()
+	if target == null or is_instance_valid(target.carried_by) or stamina <= 0.0:
+		return
+	carrying = target
+	target.set_carried_by.rpc(name)
+
+
+func _update_carry() -> void:
+	if carrying == null:
+		return
+	if not is_instance_valid(carrying):
+		carrying = null
+		return
+	# Let go if they're revived/eliminated or we're out of stamina
+	if carrying.state != "unconscious" or stamina <= 0.0:
+		_drop()
+
+
+func _drop() -> void:
+	if carrying == null:
+		return
+	if is_instance_valid(carrying):
+		carrying.set_carried_by.rpc("")
+	carrying = null
+
+
+## Runs on every machine so everyone knows who is dragging whom.
+@rpc("any_peer", "call_local", "reliable")
+func set_carried_by(carrier_name: String) -> void:
+	carried_by = get_parent().get_node_or_null(carrier_name) if carrier_name != "" else null
+
+## Unconscious bodies slide with momentum: pulled by the rope,
+## slowed by the ground, and dragged down steep slopes.
+func _update_unconscious_body(delta: float) -> void:
+	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
+	var on_floor := is_on_floor()
+
+	if on_floor:
+		# Ground friction slows the body down (much less on mud)
+		horizontal = horizontal.move_toward(Vector3.ZERO, body_friction * friction_multiplier * delta)
+		# Steep ground pulls the body downhill
+		var downhill := Vector3.DOWN.slide(get_floor_normal())
+		horizontal += Vector3(downhill.x, 0.0, downhill.z) * _gravity * body_slope_slide * delta
+
+	if is_instance_valid(carried_by):
+		var to_me := global_position - carried_by.global_position
+		to_me.y = 0.0
+		var stretch := to_me.length() - rope_length
+		if stretch > 0.0:
+			var dir := to_me.normalized()
+			# The tight rope pulls like a spring
+			horizontal -= dir * stretch * rope_stiffness * delta
+			# And never lets the body move further away
+			var away := horizontal.dot(dir)
+			if away > 0.0:
+				horizontal -= dir * away
+		# Turn so the head points toward the carrier
+		if to_me.length() > 0.1:
+			var target_yaw := atan2(-to_me.z, to_me.x)
+			model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 8.0 * delta)
+
+	velocity.x = horizontal.x
+	velocity.z = horizontal.z
+	velocity.y = 0.0 if on_floor else velocity.y - _gravity * delta
+	move_and_slide()
