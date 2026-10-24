@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/greybox.tscn" id="1_grey"]
 [ext_resource type="PackedScene" path="res://scenes/mountain.tscn" id="2_mtn"]
+[ext_resource type="Script" path="res://scripts/obstacle_spawner.gd" id="9_obst"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
 
@@ -23,5 +24,9 @@ environment = SubResource("env")
 [node name="Greybox" parent="." instance=ExtResource("1_grey")]
 
 [node name="Obstacles" type="Node3D" parent="."]
+
+[node name="ObstacleSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Obstacles")
+script = ExtResource("9_obst")
 
 [node name="Mountain" parent="." instance=ExtResource("2_mtn")]

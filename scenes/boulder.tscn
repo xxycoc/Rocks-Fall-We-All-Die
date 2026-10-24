@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/boulder.gd" id="1_boulder"]
+
+[sub_resource type="PhysicsMaterial" id="phys"]
+friction = 1.0
+
+[sub_resource type="SphereShape3D" id="body_shape"]
+radius = 1.2
+
+[sub_resource type="StandardMaterial3D" id="rock_mat"]
+albedo_color = Color(0.55, 0.55, 0.58, 1)
+
+[sub_resource type="SphereMesh" id="mesh"]
+material = SubResource("rock_mat")
+radius = 1.2
+height = 2.4
+
+[sub_resource type="SphereShape3D" id="hit_shape"]
+radius = 1.6
+
+[sub_resource type="SceneReplicationConfig" id="sync"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="Boulder" type="RigidBody3D"]
+collision_layer = 4
+collision_mask = 1
+mass = 200.0
+physics_material_override = SubResource("phys")
+continuous_cd = true
+script = ExtResource("1_boulder")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("mesh")
+
+[node name="HitArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="HitArea"]
+shape = SubResource("hit_shape")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("sync")
