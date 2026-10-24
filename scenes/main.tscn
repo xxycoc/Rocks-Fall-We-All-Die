@@ -17,6 +17,20 @@ sky = SubResource("Sky_yf5fn")
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 size = Vector3(300, 4, 300)
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_g4v7s"]
+height = 4.0
+radius = 3.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_57qmd"]
+albedo_color = Color(0.20392157, 1, 1, 1)
+emission_enabled = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_g4v7s"]
+material = SubResource("StandardMaterial3D_57qmd")
+top_radius = 3.0
+bottom_radius = 3.0
+height = 4.0
+
 [node name="Main" type="Node3D" unique_id=602507682]
 script = ExtResource("1_sugp2")
 
@@ -99,3 +113,48 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone" unique_id=1382118889]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5598774, 0)
 shape = SubResource("BoxShape3D_g4v7s")
+
+[node name="ExtractionZone" type="Area3D" parent="." unique_id=1766270385]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExtractionZone" unique_id=1616674441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41.622, -113.581)
+shape = SubResource("CylinderShape3D_g4v7s")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ExtractionZone" unique_id=670780297]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41.621887, -113.58148)
+mesh = SubResource("CylinderMesh_g4v7s")
+
+[node name="EndScreen" type="CanvasLayer" parent="." unique_id=1184605682]
+layer = 10
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="EndScreen" unique_id=1215141997]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.67058825)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EndScreen" unique_id=761129397]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="ResultTitle" type="Label" parent="EndScreen/VBoxContainer" unique_id=2140661026]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 48
+
+[node name="ResultDetail" type="Label" parent="EndScreen/VBoxContainer" unique_id=1669516969]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4

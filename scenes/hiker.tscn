@@ -31,8 +31,9 @@ properties/4/spawn = true
 properties/4/replication_mode = 1
 
 [node name="Hiker" type="CharacterBody3D" unique_id=1338685910]
-floor_max_angle = 0.87266463
+floor_max_angle = 1.3962634
 script = ExtResource("1_4h8dk")
+uphill_slow = 0.7
 climb_drain_per_second = 1.0
 rest_regen_per_second = 1.0
 

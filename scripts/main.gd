@@ -11,7 +11,11 @@ const MOUNTAIN_SCENE := preload("res://scenes/mountain.tscn")
 @onready var spawn_points: Node3D = $SpawnPoints
 @onready var lobby = $Lobby
 @onready var player_spawner: MultiplayerSpawner = $PlayerSpawner
+
 @onready var kill_zone: Area3D = $KillZone
+@onready var extraction_zone: Area3D = $ExtractionZone
+
+@onready var end_screen: CanvasLayer = $EndScreen
 
 var _is_host := false
 var _auto_join := false
@@ -37,6 +41,9 @@ func _ready() -> void:
 		_auto_join = true
 		join_game("127.0.0.1")
 	kill_zone.body_entered.connect(_on_kill_zone_body_entered)
+	extraction_zone.body_entered.connect(_on_extraction_zone_body_entered)
+
+	GameManager.game_over.connect(_on_game_over)
 
 # ---------- Hosting and joining ----------
 
@@ -148,3 +155,14 @@ func _on_kill_zone_body_entered(body: Node3D) -> void:
 	# Each machine detects this, but only the hiker's owner acts on it
 	if body.is_in_group("hikers") and body.is_multiplayer_authority():
 		body.eliminate()
+
+func _on_extraction_zone_body_entered(body: Node3D) -> void:
+	if body.is_in_group("hikers") and body.is_multiplayer_authority():
+		body.extract()
+
+func _on_game_over(winner: String) -> void:
+	%ResultTitle.text = "HIKERS ESCAPE!" if winner == "hikers" else "THE MOUNTAIN WINS"
+	%ResultDetail.text = "Escaped: %d   Eliminated: %d" % [
+		GameManager.count_state("extracted"), GameManager.count_state("eliminated")]
+	end_screen.show()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

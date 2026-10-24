@@ -116,6 +116,8 @@ func _remove_state(id: int) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _round_started(duration: float) -> void:
+	if multiplayer.is_server():
+		get_window().title = "HOST - ROUND RUNNING"
 	for id in hiker_states.keys():
 		hiker_states[id] = "alive"
 	time_left = duration
@@ -124,5 +126,6 @@ func _round_started(duration: float) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _game_over(winner: String) -> void:
+	print("GAME OVER: ", winner)
 	round_running = false
 	game_over.emit(winner)

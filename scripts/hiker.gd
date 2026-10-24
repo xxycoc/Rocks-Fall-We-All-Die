@@ -3,6 +3,10 @@ extends CharacterBody3D
 ## Stamina, slide, death and rescue get added on Saturday.
 
 @export var walk_speed := 5.0
+## Slopes (strongest when moving straight up or down a steep slope)
+@export var uphill_slow := 0.4      # up to 40% slower uphill
+@export var downhill_boost := 0.5   # up to 50% faster downhill
+
 @export var acceleration := 20.0
 @export var mouse_sensitivity := 0.003
 ## How hard mud pushes you downhill.
@@ -143,6 +147,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = _slide_direction.z * slide_speed
 	else:
 		var speed := crawl_speed if is_crawling else walk_speed
+		speed *= _slope_multiplier(direction)
 		var target := direction * speed
 		var accel := acceleration * friction_multiplier
 		velocity.x = move_toward(velocity.x, target.x, accel * delta)
@@ -193,6 +198,13 @@ func eliminate() -> void:
 		return
 	state = "eliminated"
 	GameManager.report_state.rpc_id(1, name.to_int(), "eliminated")
+
+func extract() -> void:
+	if state != "alive":
+		return
+	state = "extracted"
+	GameManager.report_state.rpc_id(1, name.to_int(), "extracted")
+
 # ---------- Stamina ----------
 
 func _update_stamina(delta: float, is_moving: bool) -> void:
@@ -226,7 +238,9 @@ func _process(_delta: float) -> void:
 	var knocked_out := state == "unconscious"
 	model.rotation.z = PI / 2 if knocked_out else 0.0
 	model.position.y = 0.4 if knocked_out else 0.0
-	model.visible = state != "eliminated"
+	model.visible = state == "alive" or state == "unconscious"
+	# Escaped or eliminated hikers shouldn't block anyone
+	$CollisionShape3D.disabled = not model.visible
 
 	if not hud.visible:
 		return
@@ -239,6 +253,8 @@ func _process(_delta: float) -> void:
 			hp_label.text = "UNCONSCIOUS  %d s left" % ceil(knockout_time_left)
 		"eliminated":
 			hp_label.text = "ELIMINATED"
+		"extracted":
+			hp_label.text = "ESCAPED! Waiting for the others"
 		_:
 			hp_label.text = "HP  %d / 100" % hp
 			
@@ -300,3 +316,21 @@ func revive() -> void:
 	state = "alive"
 	hp = revive_hp
 	GameManager.report_state.rpc_id(1, name.to_int(), "alive")
+
+# ---------- Slopes ----------
+
+## 1.0 on flat ground, below 1 going uphill, above 1 going downhill.
+func _slope_multiplier(direction: Vector3) -> float:
+	if not is_on_floor() or direction.length() < 0.1:
+		return 1.0
+	var normal := get_floor_normal()
+	# On a slope the floor normal leans toward the downhill side.
+	var downhill := Vector3(normal.x, 0.0, normal.z)
+	var steepness := downhill.length()   # 0 = flat, about 0.7 at 45 degrees
+	if steepness < 0.01:
+		return 1.0
+	# +1 = heading straight downhill, -1 = straight uphill, 0 = across
+	var along := direction.normalized().dot(downhill.normalized()) * steepness
+	if along > 0.0:
+		return 1.0 + along * downhill_boost
+	return 1.0 + along * uphill_slow
