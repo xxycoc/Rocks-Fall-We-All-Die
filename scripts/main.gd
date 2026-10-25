@@ -12,7 +12,6 @@ const MOUNTAIN_SCENE := preload("res://scenes/mountain.tscn")
 @onready var lobby = $Lobby
 @onready var player_spawner: MultiplayerSpawner = $PlayerSpawner
 
-@onready var kill_zone: Area3D = $KillZone
 @onready var extraction_zone: Area3D = $ExtractionZone
 
 @onready var end_screen: CanvasLayer = $EndScreen
@@ -41,7 +40,6 @@ func _ready() -> void:
 		elif "--join" in args:
 			_auto_join = true
 			join_game("127.0.0.1")
-	kill_zone.body_entered.connect(_on_kill_zone_body_entered)
 	extraction_zone.body_entered.connect(_on_extraction_zone_body_entered)
 
 	GameManager.game_over.connect(_on_game_over)
@@ -152,11 +150,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			if dummies_only and not hiker.is_dummy:
 				continue
 			hiker.take_damage.rpc(50)
-
-func _on_kill_zone_body_entered(body: Node3D) -> void:
-	# Each machine detects this, but only the hiker's owner acts on it
-	if body.is_in_group("hikers") and body.is_multiplayer_authority():
-		body.eliminate()
 
 func _on_extraction_zone_body_entered(body: Node3D) -> void:
 	if body.is_in_group("hikers") and body.is_multiplayer_authority():

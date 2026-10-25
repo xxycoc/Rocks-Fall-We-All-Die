@@ -141,7 +141,7 @@ func _enter_tree() -> void:
 
 	add_to_group("hikers")   # CONTRACT.md
 	collision_layer = 2       # CONTRACT.md: hikers on layer 2
-	collision_mask = 1        # collide with terrain (add obstacle layers later)
+	collision_mask = 1 | 8      # collide with terrain (add obstacle layers later)
 
 
 func _ready() -> void:
