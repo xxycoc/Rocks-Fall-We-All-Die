@@ -15,6 +15,7 @@ const EXTENSIONS: Array[String] = ["ogg", "wav", "mp3"]
 ## Plays `sound_name` on `player` if the file exists. Returns true if it played.
 ## `loop` restarts it when it ends, whatever the file's import settings say.
 static func play(player: AudioStreamPlayer3D, sound_name: String, loop := false) -> bool:
+	player.bus = "SFX"
 	if player.stream == null:
 		for ext in EXTENSIONS:
 			var path := "%s%s.%s" % [DIR, sound_name, ext]

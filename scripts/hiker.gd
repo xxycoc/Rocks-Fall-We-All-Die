@@ -68,6 +68,7 @@ var stamina := 0.0
 var is_crawling := false
 var _last_height := 0.0
 var _still_time := 0.0
+var _was_on_mud := false
 
 var _slide_time_left := 0.0
 var _slide_cooldown_left := 0.0
@@ -226,6 +227,12 @@ func _physics_process(delta: float) -> void:
 	if friction_multiplier < 1.0 and is_on_floor():
 		var downhill := Vector3.DOWN.slide(get_floor_normal()).normalized()
 		velocity += downhill * mud_slide_force * (1.0 - friction_multiplier) * delta
+	# Play the slip sound the moment you step onto mud
+	var on_mud := friction_multiplier < 1.0
+	if on_mud and not _was_on_mud:
+		_sfx.rpc("hiker_slip")
+	_was_on_mud = on_mud
+
 
 	move_and_slide()
 	_update_stamina(delta, direction.length() > 0.1 or _slide_time_left > 0.0)
@@ -243,6 +250,10 @@ func _physics_process(delta: float) -> void:
 ## synchronizer then shares the new HP with everyone.
 @rpc("any_peer", "call_local", "reliable")
 func take_damage(amount: int) -> void:
+		# Every machine plays the hit sounds. Boulders do 20 damage, landslides 40.
+	if state == "alive":
+		Sound.play_at("landslide_hit" if amount >= 40 else "boulder", global_position)
+		Sound.play_at("hiker_hurt", global_position)
 	if not is_multiplayer_authority() or state != "alive":
 		return
 	hp = max(hp - amount, 0)
@@ -258,7 +269,7 @@ func _die() -> void:
 	_slide_time_left = 0.0
 	velocity = Vector3.ZERO
 	GameManager.report_state.rpc_id(1, name.to_int(), "unconscious")
-
+	_sfx.rpc("hiker_unconscious")
 
 ## Also called by the kill zone (step 2).
 func eliminate() -> void:
@@ -266,6 +277,7 @@ func eliminate() -> void:
 	if state == "eliminated":
 		return
 	state = "eliminated"
+	_sfx.rpc("hiker_die")
 	GameManager.report_state.rpc_id(1, name.to_int(), "eliminated")
 
 func extract() -> void:
@@ -273,6 +285,7 @@ func extract() -> void:
 	if state != "alive":
 		return
 	state = "extracted"
+	_sfx.rpc("hiker_extract")
 	GameManager.report_state.rpc_id(1, name.to_int(), "extracted")
 
 # ---------- Stamina ----------
@@ -379,6 +392,7 @@ func _try_slide(direction: Vector3) -> void:
 	_slide_direction = dir.normalized()
 	_slide_time_left = slide_duration
 	_slide_cooldown_left = slide_cooldown
+	_sfx.rpc("hiker_dash")
 
 # ---------- Rescue ----------
 
@@ -411,6 +425,8 @@ func _find_rescue_target() -> Node3D:
 ## Sent to everyone, but only the downed hiker's owner acts on it.
 @rpc("any_peer", "call_local", "reliable")
 func revive() -> void:
+	if state == "unconscious":
+		Sound.play_at("hiker_revive", global_position)
 	if not is_multiplayer_authority() or state != "unconscious":
 		return
 	state = "alive"
@@ -537,11 +553,10 @@ func _pick_anim() -> String:
 		return anim_dead
 	if state != "alive":
 		return anim_idle
-	var moving := Vector2(velocity.x, velocity.z).length() > 0.5
-	if moving:
-		return anim_crawl if is_crawling else anim_walk
-	return anim_idle
-
+	if is_crawling:
+		return anim_crawl   # stay on all fours while exhausted, even when stopped
+	var moving := Vector2(velocity.x, velocity.z).length() > 0.3
+	return anim_walk if moving else anim_idle
 
 ## Every machine: play it, with a short blend so switches look smooth.
 func _play_anim(anim_name: String) -> void:
@@ -601,24 +616,42 @@ func _confirm_jacket(index: int) -> void:
 
 # ---------- Lying on slopes ----------
 
-## Tilt a lying body to match the slope under it, so it doesn't sink into the hill.
+## Tilt a lying or crawling body to match the slope under it,
+## so it doesn't sink into the hill.
 func _fit_body_to_ground() -> void:
 	if _body_visual == null:
 		return
+	var lying := state == "unconscious" or state == "eliminated"
+	var crawling := state == "alive" and anim_state == anim_crawl
 	var target := Quaternion.IDENTITY
 	var lift := 0.0
-	if state == "unconscious" or state == "eliminated":
+	if lying or crawling:
 		# Look straight down under the middle of the body (terrain only, layer 1)
-		var middle := (global_position + drag_point.global_position) / 2.0
-		var query := PhysicsRayQueryParameters3D.create(
-				middle + Vector3.UP * 1.5, middle + Vector3.DOWN * 3.0, 1)
-		var hit := get_world_3d().direct_space_state.intersect_ray(query)
-		if hit:
+				# Average the slope under the feet, middle and chest (terrain only, layer 1),
+		# so one bumpy triangle doesn't make the body wobble
+		var space := get_world_3d().direct_space_state
+		var feet := global_position
+		var chest := drag_point.global_position
+		var normal_sum := Vector3.ZERO
+		for point in [feet, (feet + chest) / 2.0, chest]:
+			var query := PhysicsRayQueryParameters3D.create(
+					point + Vector3.UP * 1.5, point + Vector3.DOWN * 3.0, 1)
+			var hit := space.intersect_ray(query)
+			if hit:
+				normal_sum += hit.normal
+		if normal_sum != Vector3.ZERO:
 			# The slope's "up" direction, as seen from inside Model
-			var ground_up: Vector3 = model.global_basis.inverse() * hit.normal
+			var ground_up: Vector3 = model.global_basis.inverse() * normal_sum.normalized()
 			target = Quaternion(Vector3.UP, ground_up.normalized())
-		lift = 0.08
+		lift = 0.08 if lying else 0.1
 	# Ease into the tilt so it doesn't snap
-	var t := clampf(10.0 * get_process_delta_time(), 0.0, 1.0)
+	var t := clampf(4.0 * get_process_delta_time(), 0.0, 1.0)
 	_body_visual.quaternion = _body_visual.quaternion.slerp(target, t)
 	_body_visual.position.y = lerpf(_body_visual.position.y, lift, t)
+
+# ---------- Sounds ----------
+
+## The owner calls _sfx.rpc("name"); everyone hears it from this hiker's position.
+@rpc("any_peer", "call_local", "reliable")
+func _sfx(sound: String) -> void:
+	Sound.play_at(sound, global_position)

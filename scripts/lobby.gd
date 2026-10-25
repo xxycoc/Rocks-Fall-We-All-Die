@@ -15,6 +15,7 @@ var _color_styles: Array[StyleBoxFlat] = []
 @onready var status_label: Label = %Status
 @onready var menu: Control = $Menu 
 
+@export var music_volume_db := -6.0
 
 func _ready() -> void:
 	%HostButton.pressed.connect(func(): host_requested.emit())
@@ -25,6 +26,10 @@ func _ready() -> void:
 	%StartButton.pressed.connect(func(): start_requested.emit())
 	GameManager.round_started.connect(func(): %WaitingCard.hide())
 	_build_color_picker()
+
+	# Music: gameplay track during rounds, menu track the rest of the time
+	GameManager.round_started.connect(func(): _switch_music(%GameMusic))
+	GameManager.game_over.connect(func(_winner): _switch_music(%MenuMusic))
 
 func _on_join_pressed() -> void:
 	var ip := ip_edit.text.strip_edges()
@@ -145,3 +150,17 @@ func _update_color_picker() -> void:
 		_color_buttons[i].text = "X" if taken.has(i) else ""
 		# White ring around your own colour
 		_color_styles[i].set_border_width_all(4 if me and me.jacket_index == i else 0)
+
+
+# ---------- Music ----------
+
+## Fade out whatever's playing and fade in the new track from the start.
+func _switch_music(to: AudioStreamPlayer) -> void:
+	var from: AudioStreamPlayer = %MenuMusic if to == %GameMusic else %GameMusic
+	if from.playing:
+		var fade_out := create_tween()
+		fade_out.tween_property(from, "volume_db", -40.0, 1.0)
+		fade_out.tween_callback(from.stop)
+	to.volume_db = -40.0
+	to.play()
+	create_tween().tween_property(to, "volume_db", music_volume_db, 1.0)

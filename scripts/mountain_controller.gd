@@ -138,6 +138,7 @@ func use_ability(index: int, point: Vector3, normal := Vector3.UP) -> bool:
 		data.offset = trail.offset_of(point)
 		data.side = _landslide_side(trail, point, data.offset)
 	spawner.spawn(data)
+	Sound.play_ui("mountain_place")
 	ability_used.emit(index, point)
 	return true
 

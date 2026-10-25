@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://cwnkh2dttp0ee"]
 
-[ext_resource type="Script" path="res://scripts/boulder.gd" id="1_boulder"]
+[ext_resource type="Script" uid="uid://djynibnsajk5a" path="res://scripts/boulder_roll.gd" id="1_boulder"]
 
 [sub_resource type="PhysicsMaterial" id="phys"]
-friction = 1.0
 
 [sub_resource type="SphereShape3D" id="body_shape"]
 radius = 1.2
@@ -27,31 +26,30 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="Boulder" type="RigidBody3D"]
+[node name="Boulder" type="RigidBody3D" unique_id=1014158704]
 collision_layer = 4
-collision_mask = 1
 mass = 200.0
 physics_material_override = SubResource("phys")
 continuous_cd = true
 script = ExtResource("1_boulder")
 
-[node name="Shape" type="CollisionShape3D" parent="."]
+[node name="Shape" type="CollisionShape3D" parent="." unique_id=301034338]
 shape = SubResource("body_shape")
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1313637170]
 mesh = SubResource("mesh")
 
-[node name="HitArea" type="Area3D" parent="."]
+[node name="HitArea" type="Area3D" parent="." unique_id=572052434]
 collision_layer = 0
 collision_mask = 2
 monitorable = false
 
-[node name="Shape" type="CollisionShape3D" parent="HitArea"]
+[node name="Shape" type="CollisionShape3D" parent="HitArea" unique_id=708620221]
 shape = SubResource("hit_shape")
 
-[node name="Roll" type="AudioStreamPlayer3D" parent="."]
+[node name="Roll" type="AudioStreamPlayer3D" parent="." unique_id=1598209877]
 unit_size = 15.0
 max_distance = 120.0
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=234826154]
 replication_config = SubResource("sync")
