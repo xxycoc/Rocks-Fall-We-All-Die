@@ -2,9 +2,14 @@ class_name MountainCamera
 extends Camera3D
 ## Angled top-down camera for the Mountain player.
 ## Pan: WASD (move_* actions) or hold the middle mouse button and drag.
+## Rotate: hold the right mouse button and drag, or Q / E.
 ## Zoom: mouse wheel. The camera looks at `focus` from `distance` away.
 
 @export var pitch_degrees := -60.0
+@export var min_pitch_degrees := -85.0
+@export var max_pitch_degrees := -10.0
+@export var orbit_sensitivity := 0.3  # degrees per pixel dragged
+@export var orbit_key_speed := 90.0  # degrees per second with Q / E
 @export var pan_speed := 0.8  # per second, scaled by distance so zoomed-out panning stays fast
 @export var zoom_step := 1.12
 @export var min_distance := 20.0
@@ -23,11 +28,15 @@ extends Camera3D
 
 var focus := Vector3(0.0, 21.0, -40.0)
 var distance := 130.0
+var yaw_degrees := 0.0
+## True once the current right-button press has rotated the view, so the
+## controller can tell a drag from a right-click (which cancels the ability).
+var orbited := false
 var _dragging := false
+var _orbiting := false
 
 
 func _ready() -> void:
-	rotation_degrees = Vector3(pitch_degrees, 0.0, 0.0)
 	focus.y = focus_height
 	var trail := Trail.find(get_tree())
 	if trail:
@@ -43,9 +52,13 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	var turn := float(Input.is_physical_key_pressed(KEY_E)) - float(Input.is_physical_key_pressed(KEY_Q))
+	if turn != 0.0:
+		yaw_degrees += turn * orbit_key_speed * delta
+		_apply()
 	var dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	if dir != Vector2.ZERO:
-		focus += Vector3(dir.x, 0.0, dir.y) * pan_speed * distance * delta
+		focus += _ground(dir) * pan_speed * distance * delta
 		_apply()
 
 
@@ -55,6 +68,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		match mb.button_index:
 			MOUSE_BUTTON_MIDDLE:
 				_dragging = mb.pressed
+			MOUSE_BUTTON_RIGHT:
+				_orbiting = mb.pressed
+				if mb.pressed:
+					orbited = false
 			MOUSE_BUTTON_WHEEL_UP:
 				if mb.pressed:
 					distance /= zoom_step
@@ -63,17 +80,32 @@ func _unhandled_input(event: InputEvent) -> void:
 				if mb.pressed:
 					distance *= zoom_step
 					_apply()
+	elif event is InputEventMouseMotion and _orbiting:
+		var motion := (event as InputEventMouseMotion).relative
+		yaw_degrees -= motion.x * orbit_sensitivity
+		pitch_degrees -= motion.y * orbit_sensitivity
+		if motion.length() > 1.0:
+			orbited = true
+		_apply()
 	elif event is InputEventMouseMotion and _dragging:
 		var motion := (event as InputEventMouseMotion).relative
 		# Rough "ground follows the cursor" factor for this FOV.
 		var factor := distance * 1.2 / get_viewport().get_visible_rect().size.y
-		focus -= Vector3(motion.x, 0.0, motion.y) * factor
+		focus -= _ground(motion) * factor
 		_apply()
+
+
+## Turns a screen-space direction (x right, y down) into a ground direction
+## for the current yaw, so panning follows the view after rotating.
+func _ground(screen: Vector2) -> Vector3:
+	return Vector3(screen.x, 0.0, screen.y).rotated(Vector3.UP, deg_to_rad(yaw_degrees))
 
 
 func _apply() -> void:
 	focus.x = clampf(focus.x, bounds_min.x, bounds_max.x)
 	focus.z = clampf(focus.z, bounds_min.y, bounds_max.y)
 	distance = clampf(distance, min_distance, max_distance)
+	pitch_degrees = clampf(pitch_degrees, min_pitch_degrees, max_pitch_degrees)
+	rotation_degrees = Vector3(pitch_degrees, yaw_degrees, 0.0)
 	# basis.z points backwards from the view direction.
 	position = focus + basis.z * distance

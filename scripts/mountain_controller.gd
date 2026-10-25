@@ -74,11 +74,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("ability_%d" % (i + 1)):
 			select(i)
 			return
-	if event is InputEventMouseButton and event.pressed:
+	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_RIGHT:
-			select(-1)
-		elif mb.button_index == MOUSE_BUTTON_LEFT and selected >= 0:
+		# Right-click cancels on release; a right-drag rotates the camera instead.
+		if mb.button_index == MOUSE_BUTTON_RIGHT and not mb.pressed:
+			if not (camera is MountainCamera and camera.orbited):
+				select(-1)
+		elif mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed and selected >= 0:
 			var hit := raycast_terrain(mb.position)
 			if hit.is_empty():
 				ability_failed.emit("Click on the mountain")
