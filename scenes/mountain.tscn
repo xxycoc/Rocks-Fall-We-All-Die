@@ -1,16 +1,24 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://dntc2mtd7bcf6"]
 
 [ext_resource type="PackedScene" path="res://scenes/mountain_camera.tscn" id="1_cam"]
-[ext_resource type="Script" path="res://scripts/mountain_controller.gd" id="2_ctrl"]
-[ext_resource type="PackedScene" path="res://scenes/mountain_hud.tscn" id="3_hud"]
+[ext_resource type="Script" uid="uid://j1ym3rgrt6w7" path="res://scripts/mountain_controller.gd" id="2_ctrl"]
+[ext_resource type="PackedScene" uid="uid://qn28j1r50pr8" path="res://scenes/mountain_hud.tscn" id="3_hud"]
+[ext_resource type="Script" uid="uid://4ghc778vam41" path="res://scripts/mountain_markers.gd" id="4_1mgkb"]
 
-[node name="Mountain" type="Node"]
+[node name="Mountain" type="Node" unique_id=743694814]
 
-[node name="MountainCamera" parent="." instance=ExtResource("1_cam")]
+[node name="MountainMarkers" type="Control" parent="." unique_id=1091727704]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_1mgkb")
 
-[node name="MountainController" type="Node" parent="." node_paths=PackedStringArray("camera")]
+[node name="MountainCamera" parent="." unique_id=466397632 instance=ExtResource("1_cam")]
+
+[node name="MountainController" type="Node" parent="." unique_id=1637924772 node_paths=PackedStringArray("camera")]
 script = ExtResource("2_ctrl")
 camera = NodePath("../MountainCamera")
 
-[node name="MountainHUD" parent="." node_paths=PackedStringArray("controller") instance=ExtResource("3_hud")]
+[node name="MountainHUD" parent="." unique_id=114877570 node_paths=PackedStringArray("controller") instance=ExtResource("3_hud")]
 controller = NodePath("../MountainController")
