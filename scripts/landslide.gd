@@ -27,7 +27,7 @@ var _fall := {}  # block -> [rest_y, fall_speed, place across the band from -0.5
 @onready var _warning: MeshInstance3D = $Warning
 @onready var _wave: Area3D = $Wave
 @onready var _shape: CollisionShape3D = $Wave/Shape
-@onready var _block_template: MeshInstance3D = $Wave/BlockTemplate
+@onready var _block_template: Node3D = $Wave/BlockTemplate
 @onready var _siren: AudioStreamPlayer3D = $Warning/Siren
 @onready var _rumble: AudioStreamPlayer3D = $Wave/Rumble
 
@@ -77,7 +77,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var width := _place(_wave)
 	(_shape.shape as BoxShape3D).size.x = width
-	for block: MeshInstance3D in _fall:
+	for block: Node3D in _fall:
 		var f: Array = _fall[block]
 		block.position.x = f[2] * width
 		block.rotate_x(_speed * delta * 0.5)
@@ -96,7 +96,7 @@ func _place(node: Node3D) -> float:
 
 func _spawn_blocks(width: float) -> void:
 	for i in maxi(int(width * BLOCKS_PER_METRE), 6):
-		var block := _block_template.duplicate() as MeshInstance3D
+		var block := _block_template.duplicate() as Node3D
 		var u := randf_range(-0.5, 0.5)
 		var rest_y := randf_range(0.5, 2.5)
 		block.position = Vector3(u * width, rest_y + randf_range(DROP_HEIGHT.x, DROP_HEIGHT.y), randf_range(-2.0, 2.0))

@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/landslide.gd" id="1_slide"]
+[ext_resource type="PackedScene" uid="uid://comw7gl1mf31m" path="res://art/DirtBlock.glb" id="2_dirt"]
 
 [sub_resource type="StandardMaterial3D" id="warn_mat"]
 transparency = 1
@@ -13,12 +14,6 @@ size = Vector3(1, 3, 6)
 
 [sub_resource type="BoxShape3D" id="wave_shape"]
 size = Vector3(1, 6, 4)
-
-[sub_resource type="StandardMaterial3D" id="dirt_mat"]
-albedo_color = Color(0.4, 0.28, 0.16, 1)
-
-[sub_resource type="BoxMesh" id="block_mesh"]
-material = SubResource("dirt_mat")
 
 [node name="Landslide" type="Node3D"]
 script = ExtResource("1_slide")
@@ -41,9 +36,11 @@ monitorable = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("wave_shape")
 
-[node name="BlockTemplate" type="MeshInstance3D" parent="Wave"]
+[node name="BlockTemplate" type="Node3D" parent="Wave"]
 visible = false
-mesh = SubResource("block_mesh")
+
+[node name="Model" parent="Wave/BlockTemplate" instance=ExtResource("2_dirt")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, -0.5, 0)
 
 [node name="Rumble" type="AudioStreamPlayer3D" parent="Wave"]
 unit_size = 25.0

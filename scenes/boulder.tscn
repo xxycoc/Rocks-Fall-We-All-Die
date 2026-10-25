@@ -1,19 +1,12 @@
 [gd_scene format=3 uid="uid://cwnkh2dttp0ee"]
 
 [ext_resource type="Script" uid="uid://djynibnsajk5a" path="res://scripts/boulder_roll.gd" id="1_boulder"]
+[ext_resource type="PackedScene" uid="uid://c3xibf3qykl04" path="res://art/Boulder.glb" id="2_model"]
 
 [sub_resource type="PhysicsMaterial" id="phys"]
 
 [sub_resource type="SphereShape3D" id="body_shape"]
 radius = 1.2
-
-[sub_resource type="StandardMaterial3D" id="rock_mat"]
-albedo_color = Color(0.55, 0.55, 0.58, 1)
-
-[sub_resource type="SphereMesh" id="mesh"]
-material = SubResource("rock_mat")
-radius = 1.2
-height = 2.4
 
 [sub_resource type="SphereShape3D" id="hit_shape"]
 radius = 1.6
@@ -36,8 +29,8 @@ script = ExtResource("1_boulder")
 [node name="Shape" type="CollisionShape3D" parent="." unique_id=301034338]
 shape = SubResource("body_shape")
 
-[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1313637170]
-mesh = SubResource("mesh")
+[node name="Mesh" parent="." unique_id=1313637170 instance=ExtResource("2_model")]
+transform = Transform3D(0.77, 0, 0, 0, 0.77, 0, 0, 0, 0.77, 0, -1.21, 0)
 
 [node name="HitArea" type="Area3D" parent="." unique_id=572052434]
 collision_layer = 0
