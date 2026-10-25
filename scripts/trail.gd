@@ -1,8 +1,10 @@
+@tool
 class_name Trail
 extends Path3D
 ## The hiking trail (P2). Draw it in the editor along the middle of the trail,
 ## first point at the bottom, last point at the peak. Boulders and landslides
 ## follow it downhill, so they stay on the trail however it winds or narrows.
+## Place points roughly, then press "Snap points to ground" in the Inspector.
 
 const TERRAIN_MASK := 1
 const EDGE_STEP := 0.5
@@ -13,12 +15,33 @@ const EDGE_SLOPE := 1.0  # rise over run, 45 degrees
 const RAY_REACH := 6.0
 ## Rock closer than this above the ground is an overhang, so the trail ends there.
 const HEADROOM := 3.0
+## How high above the ground "Snap points to ground" puts each point.
+const SNAP_LIFT := 0.3
+
+@export_tool_button("Snap points to ground") var snap_action := snap_to_ground
 
 
 ## The Trail in the current scene, or null if the level has none.
 static func find(tree: SceneTree) -> Trail:
 	var scene := tree.current_scene
 	return scene.find_child("Trail", true, false) as Trail if scene else null
+
+
+## Drops every curve point onto the terrain below it (the surface within
+## RAY_REACH of the point first, so points under an overhang stay there).
+func snap_to_ground() -> void:
+	var space := get_world_3d().direct_space_state
+	for i in curve.point_count:
+		var p := to_global(curve.get_point_position(i))
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(
+				p + Vector3.UP * RAY_REACH, p + Vector3.DOWN * RAY_REACH, TERRAIN_MASK))
+		if hit.is_empty():
+			hit = space.intersect_ray(PhysicsRayQueryParameters3D.create(
+					p + Vector3.UP * 500.0, p + Vector3.DOWN * 500.0, TERRAIN_MASK))
+		if hit:
+			curve.set_point_position(i, to_local(hit.position + Vector3.UP * SNAP_LIFT))
+			curve.set_point_in(i, Vector3.ZERO)
+			curve.set_point_out(i, Vector3.ZERO)
 
 
 func length() -> float:
