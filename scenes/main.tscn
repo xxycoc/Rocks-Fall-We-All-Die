@@ -229,7 +229,7 @@ spawn_path = NodePath("../Obstacles")
 script = ExtResource("9_obst")
 
 [node name="SpawnPoints" type="Node3D" parent="." unique_id=1304857624]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.529648, 3.2253666, -9.801772)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.159073, 3.6214552, -12.6711645)
 
 [node name="Marker3D" type="Marker3D" parent="SpawnPoints" unique_id=1452039435]
 transform = Transform3D(0.78310186, -0.62189347, 0, 0.62189347, 0.78310186, 0, 0, 0, 1, 0, 1.2289233, 0.6840866)
@@ -617,336 +617,336 @@ cast_shadow = 0
 mesh = SubResource("CylinderMesh_jkv2x")
 surface_material_override/0 = SubResource("StandardMaterial3D_jbj1t")
 
-[node name="Scenery" type="Node3D" parent="."]
+[node name="Scenery" type="Node3D" parent="." unique_id=1887402568]
 
-[node name="Pine1" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine1" parent="Scenery" unique_id=1207856 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7909, 0, -0.2075, 0, 0.8177, 0, 0.2075, 0, -0.7909, -81.0397, 12.8752, -129.9469)
 
-[node name="Pine2" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine2" parent="Scenery" unique_id=1116609218 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.1694, 0, -0.8403, 0, 0.8572, 0, 0.8403, 0, 0.1694, 90.8402, 1.0048, -45.3532)
 
-[node name="Pine3" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine3" parent="Scenery" unique_id=484284419 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.8873, 0, 0.3466, 0, 0.9526, 0, -0.3466, 0, 0.8873, 87.8442, 0.5, -19.4624)
 
-[node name="Pine4" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine4" parent="Scenery" unique_id=164934468 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.8973, 0, -0.3278, 0, 0.9554, 0, 0.3278, 0, 0.8973, 18.0917, 54.5131, -155.496)
 
-[node name="Pine5" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine5" parent="Scenery" unique_id=1103246913 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.3611, 0, 1.0007, 0, 1.0639, 0, -1.0007, 0, -0.3611, -35.2628, 26.1962, -113.6463)
 
-[node name="Pine6" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine6" parent="Scenery" unique_id=1612140872 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.4361, 0, 1.1081, 0, 1.1908, 0, -1.1081, 0, 0.4361, 86.9093, 9.9701, -97.948)
 
-[node name="Pine7" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine7" parent="Scenery" unique_id=2011698228 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.0234, 0, -1.1639, 0, 1.1642, 0, 1.1639, 0, 0.0234, -46.0245, 15.8616, -76.7469)
 
-[node name="Pine8" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine8" parent="Scenery" unique_id=1730452467 instance=ExtResource("scn_pine")]
 transform = Transform3D(1.0103, 0, -0.3062, 0, 1.0557, 0, 0.3062, 0, 1.0103, -39.4225, 28.054, -143.6418)
 
-[node name="Pine9" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine9" parent="Scenery" unique_id=1162240123 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7217, 0, 0.4443, 0, 0.8475, 0, -0.4443, 0, -0.7217, -62.2026, 0.5365, -9.7183)
 
-[node name="Pine10" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine10" parent="Scenery" unique_id=818378478 instance=ExtResource("scn_pine")]
 transform = Transform3D(-1.0448, 0, -0.6018, 0, 1.2057, 0, 0.6018, 0, -1.0448, 77.9213, 0.5, -4.3725)
 
-[node name="Pine11" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine11" parent="Scenery" unique_id=596484732 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.9039, 0, -0.4688, 0, 1.0183, 0, 0.4688, 0, -0.9039, 94.8412, 0.5, -125.4603)
 
-[node name="Pine12" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine12" parent="Scenery" unique_id=705665863 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.5144, 0, -0.6227, 0, 0.8076, 0, 0.6227, 0, 0.5144, 5.6079, 50.9397, -70.04)
 
-[node name="Pine13" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine13" parent="Scenery" unique_id=1119550194 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.8325, 0, -0.9799, 0, 1.2858, 0, 0.9799, 0, 0.8325, -68.3867, 14.0567, -137.8489)
 
-[node name="Pine14" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine14" parent="Scenery" unique_id=49261093 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.9303, 0, 0.3781, 0, 1.0042, 0, -0.3781, 0, 0.9303, -21.1842, 3.918, -158.9603)
 
-[node name="Pine15" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine15" parent="Scenery" unique_id=1877676518 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.1463, 0, -1.121, 0, 1.1305, 0, 1.121, 0, -0.1463, 85.0196, 0.5, -29.9517)
 
-[node name="Pine16" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine16" parent="Scenery" unique_id=206795344 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.8422, 0, -0.1677, 0, 0.8587, 0, 0.1677, 0, -0.8422, 57.4424, 0.6149, -6.4828)
 
-[node name="Pine17" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine17" parent="Scenery" unique_id=691851754 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.0618, 0, -1.0105, 0, 1.0124, 0, 1.0105, 0, -0.0618, -26.0028, 5.5484, -17.5021)
 
-[node name="Pine18" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine18" parent="Scenery" unique_id=741170678 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.8022, 0, 0.2355, 0, 0.8361, 0, -0.2355, 0, 0.8022, 89.2953, 0.511, -57.4817)
 
-[node name="Pine19" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine19" parent="Scenery" unique_id=1214994328 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.8338, 0, 0.1721, 0, 0.8513, 0, -0.1721, 0, -0.8338, 62.8272, 4.1008, -33.9973)
 
-[node name="Pine20" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine20" parent="Scenery" unique_id=1534621754 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.488, 0, -0.7028, 0, 0.8557, 0, 0.7028, 0, -0.488, 64.4909, 3.3423, -22.4268)
 
-[node name="Pine21" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine21" parent="Scenery" unique_id=648972156 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.5875, 0, 0.7397, 0, 0.9446, 0, -0.7397, 0, -0.5875, -11.6048, 7.3296, -33.5465)
 
-[node name="Pine22" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine22" parent="Scenery" unique_id=1216900869 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.4031, 0, -0.7643, 0, 0.8641, 0, 0.7643, 0, -0.4031, 49.7199, 7.3685, -42.6257)
 
-[node name="Pine23" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine23" parent="Scenery" unique_id=647077881 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.627, 0, 0.8974, 0, 1.0948, 0, -0.8974, 0, 0.627, 39.6611, 5.0608, -23.1255)
 
-[node name="Pine24" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine24" parent="Scenery" unique_id=235660966 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7444, 0, 0.9012, 0, 1.1689, 0, -0.9012, 0, -0.7444, -70.3333, 9.2809, -43.6377)
 
-[node name="Pine25" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine25" parent="Scenery" unique_id=1075094886 instance=ExtResource("scn_pine")]
 transform = Transform3D(1.1277, 0, 0.3152, 0, 1.1709, 0, -0.3152, 0, 1.1277, 88.3408, 0.5, -159.3878)
 
-[node name="Pine26" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine26" parent="Scenery" unique_id=136914009 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.356, 0, -0.788, 0, 0.8647, 0, 0.788, 0, -0.356, 34.8488, 3.6376, -31.7626)
 
-[node name="Pine27" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine27" parent="Scenery" unique_id=1619491620 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.6975, 0, 0.6685, 0, 0.9661, 0, -0.6685, 0, -0.6975, -30.8117, 26.1058, -93.5116)
 
-[node name="Pine28" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine28" parent="Scenery" unique_id=1989361767 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7996, 0, -0.071, 0, 0.8027, 0, 0.071, 0, -0.7996, 92.1028, 0.5, -108.1974)
 
-[node name="Pine29" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine29" parent="Scenery" unique_id=1152220448 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.9028, 0, 0.5415, 0, 1.0528, 0, -0.5415, 0, 0.9028, 95.6753, 0.5, -130.4542)
 
-[node name="Pine30" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine30" parent="Scenery" unique_id=1097071336 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.5703, 0, -0.8145, 0, 0.9943, 0, 0.8145, 0, -0.5703, 54.4811, 52.1929, -78.1928)
 
-[node name="Pine31" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine31" parent="Scenery" unique_id=1756322738 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.5383, 0, -0.6573, 0, 0.8496, 0, 0.6573, 0, 0.5383, -70.0096, 16.4671, -101.0174)
 
-[node name="Pine32" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine32" parent="Scenery" unique_id=1643515421 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.3835, 0, 0.9819, 0, 1.0542, 0, -0.9819, 0, -0.3835, -53.5524, 4.7653, -156.8679)
 
-[node name="Pine33" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine33" parent="Scenery" unique_id=189094867 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7765, 0, -0.3658, 0, 0.8584, 0, 0.3658, 0, -0.7765, -57.7892, 11.4093, -37.8447)
 
-[node name="Pine34" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine34" parent="Scenery" unique_id=774162391 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.2716, 0, -0.7814, 0, 0.8273, 0, 0.7814, 0, -0.2716, -79.8564, 0.5, -16.0809)
 
-[node name="Pine35" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine35" parent="Scenery" unique_id=35793642 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7492, 0, -0.658, 0, 0.9971, 0, 0.658, 0, -0.7492, -65.0418, 20.6479, -123.3263)
 
-[node name="Pine36" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine36" parent="Scenery" unique_id=354263224 instance=ExtResource("scn_pine")]
 transform = Transform3D(1.0256, 0, 0.5289, 0, 1.1539, 0, -0.5289, 0, 1.0256, -60.3021, 21.5876, -117.8983)
 
-[node name="Pine37" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine37" parent="Scenery" unique_id=354688486 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.3028, 0, -1.2484, 0, 1.2846, 0, 1.2484, 0, -0.3028, 92.2528, 0.5, -82.7338)
 
-[node name="Pine38" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine38" parent="Scenery" unique_id=578264996 instance=ExtResource("scn_pine")]
 transform = Transform3D(-1.026, 0, -0.7575, 0, 1.2753, 0, 0.7575, 0, -1.026, -40.0436, 5.0274, -15.7684)
 
-[node name="Pine39" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine39" parent="Scenery" unique_id=1365760817 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.0337, 0, -1.0352, 0, 1.0357, 0, 1.0352, 0, -0.0337, -75.0109, 17.3157, -124.4715)
 
-[node name="Pine40" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine40" parent="Scenery" unique_id=2125697542 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.5529, 0, 1.0076, 0, 1.1493, 0, -1.0076, 0, 0.5529, 71.6031, 0.5, -9.3486)
 
-[node name="Pine41" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine41" parent="Scenery" unique_id=916811517 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.2953, 0, -1.1168, 0, 1.1552, 0, 1.1168, 0, -0.2953, 71.35, 3.7631, -50.5675)
 
-[node name="Pine42" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine42" parent="Scenery" unique_id=600822115 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7958, 0, -0.6917, 0, 1.0544, 0, 0.6917, 0, -0.7958, -60.1842, 11.6229, -84.8579)
 
-[node name="Pine43" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine43" parent="Scenery" unique_id=949465704 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.7375, 0, 0.6497, 0, 0.9829, 0, -0.6497, 0, 0.7375, 68.355, 1.3341, -153.0431)
 
-[node name="Pine44" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine44" parent="Scenery" unique_id=472535140 instance=ExtResource("scn_pine")]
 transform = Transform3D(0.3769, 0, 1.0835, 0, 1.1472, 0, -1.0835, 0, 0.3769, -23.915, 8.9493, -26.4886)
 
-[node name="Pine45" parent="Scenery" instance=ExtResource("scn_pine")]
+[node name="Pine45" parent="Scenery" unique_id=342245420 instance=ExtResource("scn_pine")]
 transform = Transform3D(-1.096, 0, 0.1075, 0, 1.1013, 0, -0.1075, 0, -1.096, -22.7173, 3.5105, -11.5583)
 
-[node name="PineSmall1" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall1" parent="Scenery" unique_id=12243538 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.8903, 0, -0.4615, 0, 1.0029, 0, 0.4615, 0, -0.8903, -38.7598, 26.3162, -122.7641)
 
-[node name="PineSmall2" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall2" parent="Scenery" unique_id=1662833276 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-1.1896, 0, 0.0776, 0, 1.1921, 0, -0.0776, 0, -1.1896, 27.2089, 51.5026, -67.5178)
 
-[node name="PineSmall3" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall3" parent="Scenery" unique_id=818636038 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.609, 0, 0.5426, 0, 0.8156, 0, -0.5426, 0, 0.609, -61.2551, 17.7223, -103.3362)
 
-[node name="PineSmall4" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall4" parent="Scenery" unique_id=359085436 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.8704, 0, -0.4181, 0, 0.9656, 0, 0.4181, 0, -0.8704, 84.5414, 0.5, -20.5466)
 
-[node name="PineSmall5" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall5" parent="Scenery" unique_id=562231327 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.9696, 0, -0.1018, 0, 0.9749, 0, 0.1018, 0, -0.9696, 96.2851, 0.5, -40.8527)
 
-[node name="PineSmall6" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall6" parent="Scenery" unique_id=34923889 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.5956, 0, 0.6229, 0, 0.8618, 0, -0.6229, 0, 0.5956, -73.1274, 20.0066, -109.0798)
 
-[node name="PineSmall7" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall7" parent="Scenery" unique_id=1567300954 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.555, 0, -0.6704, 0, 0.8703, 0, 0.6704, 0, 0.555, -70.1618, 12.2135, -54.052)
 
-[node name="PineSmall8" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall8" parent="Scenery" unique_id=2133547152 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.5063, 0, 0.803, 0, 0.9493, 0, -0.803, 0, -0.5063, -40.6736, 20.6175, -92.1608)
 
-[node name="PineSmall9" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall9" parent="Scenery" unique_id=211213229 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(1.162, 0, 0.4916, 0, 1.2617, 0, -0.4916, 0, 1.162, -65.1607, 13.4511, -43.0805)
 
-[node name="PineSmall10" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall10" parent="Scenery" unique_id=1978896846 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.8188, 0, 0.78, 0, 1.1309, 0, -0.78, 0, 0.8188, -55.7947, 16.1201, -64.6381)
 
-[node name="PineSmall11" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall11" parent="Scenery" unique_id=469448964 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(1.1363, 0, 0.1356, 0, 1.1444, 0, -0.1356, 0, 1.1363, -25.3463, 4.9199, -17.0164)
 
-[node name="PineSmall12" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall12" parent="Scenery" unique_id=103857080 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.7251, 0, 0.5296, 0, 0.8979, 0, -0.5296, 0, -0.7251, -41.8656, 25.7681, -134.9119)
 
-[node name="PineSmall13" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall13" parent="Scenery" unique_id=591049784 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.9229, 0, 0.9006, 0, 1.2895, 0, -0.9006, 0, 0.9229, 34.8515, 2.367, -2.9569)
 
-[node name="PineSmall14" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall14" parent="Scenery" unique_id=1584680678 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.6595, 0, 1.0074, 0, 1.2041, 0, -1.0074, 0, -0.6595, -59.5053, 15.2099, -51.9397)
 
-[node name="PineSmall15" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall15" parent="Scenery" unique_id=698026267 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.9358, 0, 0.0853, 0, 0.9397, 0, -0.0853, 0, -0.9358, 9.4737, 5.2775, -32.8808)
 
-[node name="PineSmall16" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall16" parent="Scenery" unique_id=697567760 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.0125, 0, -0.8892, 0, 0.8893, 0, 0.8892, 0, 0.0125, -34.5778, 31.9885, -132.6465)
 
-[node name="PineSmall17" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall17" parent="Scenery" unique_id=318693497 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.3122, 0, -0.9994, 0, 1.047, 0, 0.9994, 0, 0.3122, -65.9618, 7.6308, -37.9584)
 
-[node name="PineSmall18" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall18" parent="Scenery" unique_id=1549200225 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.8057, 0, -0.0888, 0, 0.8106, 0, 0.0888, 0, 0.8057, -66.8015, 11.9642, -88.1111)
 
-[node name="PineSmall19" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall19" parent="Scenery" unique_id=1524597789 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.5693, 0, 0.9961, 0, 1.1473, 0, -0.9961, 0, 0.5693, 42.8889, 1.9803, -3.2669)
 
-[node name="PineSmall20" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall20" parent="Scenery" unique_id=1507436989 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.2227, 0, 0.866, 0, 0.8942, 0, -0.866, 0, -0.2227, -40.5916, 19.5375, -97.3636)
 
-[node name="PineSmall21" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall21" parent="Scenery" unique_id=643178136 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.1509, 0, 0.8111, 0, 0.8251, 0, -0.8111, 0, -0.1509, -29.7118, 11.947, -35.4046)
 
-[node name="PineSmall22" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall22" parent="Scenery" unique_id=366097022 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(1.0587, 0, -0.1602, 0, 1.0707, 0, 0.1602, 0, 1.0587, -25.236, 6.0327, -24.0037)
 
-[node name="PineSmall23" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall23" parent="Scenery" unique_id=1958509638 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.2778, 0, -1.136, 0, 1.1695, 0, 1.136, 0, 0.2778, -79.7496, 8.9622, -60.3045)
 
-[node name="PineSmall24" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall24" parent="Scenery" unique_id=1047018428 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.8577, 0, -0.0339, 0, 0.8584, 0, 0.0339, 0, -0.8577, -62.7907, 19.3971, -109.6801)
 
-[node name="PineSmall25" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall25" parent="Scenery" unique_id=2072433532 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.0429, 0, -0.8441, 0, 0.8452, 0, 0.8441, 0, 0.0429, 15.5012, 4.4414, -33.1009)
 
-[node name="PineSmall26" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall26" parent="Scenery" unique_id=2005719835 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.3734, 0, 0.7752, 0, 0.8605, 0, -0.7752, 0, 0.3734, 6.4632, 6.6618, -34.4991)
 
-[node name="PineSmall27" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall27" parent="Scenery" unique_id=2083207300 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-1.1068, 0, 0.1511, 0, 1.117, 0, -0.1511, 0, -1.1068, -49.0504, 19.1394, -108.4985)
 
-[node name="PineSmall28" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall28" parent="Scenery" unique_id=683931291 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(-0.7362, 0, -0.4699, 0, 0.8734, 0, 0.4699, 0, -0.7362, 94.052, 0.5, -139.525)
 
-[node name="PineSmall29" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall29" parent="Scenery" unique_id=820650255 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.8184, 0, -0.438, 0, 0.9283, 0, 0.438, 0, 0.8184, -42.0598, 20.5741, -75.0483)
 
-[node name="PineSmall30" parent="Scenery" instance=ExtResource("scn_pine_small")]
+[node name="PineSmall30" parent="Scenery" unique_id=1592148695 instance=ExtResource("scn_pine_small")]
 transform = Transform3D(0.0447, 0, 0.9911, 0, 0.9921, 0, -0.9911, 0, 0.0447, -33.0309, 12.8699, -40.4545)
 
-[node name="Rocks1" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks1" parent="Scenery" unique_id=1296759484 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-1.5072, 0, -3.7717, 0, 4.0617, 0, 3.7717, 0, -1.5072, -43.6079, 16.6783, -77.7054)
 
-[node name="Rocks2" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks2" parent="Scenery" unique_id=365967624 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-3.7733, 0, 4.4456, 0, 5.831, 0, -4.4456, 0, -3.7733, -72.5212, 9.9601, -84.6793)
 
-[node name="Rocks3" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks3" parent="Scenery" unique_id=1371537377 instance=ExtResource("scn_rocks")]
 transform = Transform3D(3.3833, 0, 3.6751, 0, 4.9953, 0, -3.6751, 0, 3.3833, -67.9063, 13.6838, -60.9402)
 
-[node name="Rocks4" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks4" parent="Scenery" unique_id=1311262088 instance=ExtResource("scn_rocks")]
 transform = Transform3D(4.9773, 0, -1.7963, 0, 5.2916, 0, 1.7963, 0, 4.9773, -56.486, 22.2843, -117.7987)
 
-[node name="Rocks5" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks5" parent="Scenery" unique_id=1251404273 instance=ExtResource("scn_rocks")]
 transform = Transform3D(2.2665, 0, -3.5074, 0, 4.176, 0, 3.5074, 0, 2.2665, -47.7015, 22.0256, -112.4173)
 
-[node name="Rocks6" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks6" parent="Scenery" unique_id=69942813 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-6.8921, 0, -0.2491, 0, 6.8966, 0, 0.2491, 0, -6.8921, 81.6891, 0.5, -13.5209)
 
-[node name="Rocks7" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks7" parent="Scenery" unique_id=2100434191 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-0.0817, 0, -4.1755, 0, 4.1763, 0, 4.1755, 0, -0.0817, -32.4788, 30.4433, -149.0691)
 
-[node name="Rocks8" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks8" parent="Scenery" unique_id=1938549570 instance=ExtResource("scn_rocks")]
 transform = Transform3D(0.8458, 0, -6.9408, 0, 6.9921, 0, 6.9408, 0, 0.8458, 68.2877, 1.6813, -19.7171)
 
-[node name="Rocks9" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks9" parent="Scenery" unique_id=1793596223 instance=ExtResource("scn_rocks")]
 transform = Transform3D(7.8377, 0, 1.1767, 0, 7.9255, 0, -1.1767, 0, 7.8377, 5.696, 5.5344, -21.169)
 
-[node name="Rocks10" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks10" parent="Scenery" unique_id=575226119 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-5.2108, 0, -4.5172, 0, 6.8962, 0, 4.5172, 0, -5.2108, -39.7965, 21.618, -95.4576)
 
-[node name="Rocks11" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks11" parent="Scenery" unique_id=123520048 instance=ExtResource("scn_rocks")]
 transform = Transform3D(2.1168, 0, -3.4233, 0, 4.0249, 0, 3.4233, 0, 2.1168, -67.0692, 20.2816, -114.391)
 
-[node name="Rocks12" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks12" parent="Scenery" unique_id=820401406 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-6.0889, 0, 2.6557, 0, 6.6428, 0, -2.6557, 0, -6.0889, 90.0402, 0.5, -10.7127)
 
-[node name="Rocks13" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks13" parent="Scenery" unique_id=59090930 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-4.6667, 0, -5.1298, 0, 6.9349, 0, 5.1298, 0, -4.6667, 48.9182, 4.8202, -19.1022)
 
-[node name="Rocks14" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks14" parent="Scenery" unique_id=1374380677 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-1.8011, 0, 5.7863, 0, 6.0602, 0, -5.7863, 0, -1.8011, -54.4464, 8.8085, -29.021)
 
-[node name="Rocks15" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks15" parent="Scenery" unique_id=1318029405 instance=ExtResource("scn_rocks")]
 transform = Transform3D(2.61, 0, 3.6503, 0, 4.4874, 0, -3.6503, 0, 2.61, -45.7203, 17.2626, -68.6609)
 
-[node name="Rocks16" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks16" parent="Scenery" unique_id=2057413919 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-2.9593, 0, -3.308, 0, 4.4385, 0, 3.308, 0, -2.9593, 9.7196, 4.4189, -13.5794)
 
-[node name="Rocks17" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks17" parent="Scenery" unique_id=1231547663 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-0.8143, 0, 6.791, 0, 6.8396, 0, -6.791, 0, -0.8143, 94.6114, 0.5, -43.9289)
 
-[node name="Rocks18" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks18" parent="Scenery" unique_id=801192121 instance=ExtResource("scn_rocks")]
 transform = Transform3D(1.8997, 0, 7.3383, 0, 7.5802, 0, -7.3383, 0, 1.8997, -77.6923, 0.7753, -24.0921)
 
-[node name="Rocks19" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks19" parent="Scenery" unique_id=582434391 instance=ExtResource("scn_rocks")]
 transform = Transform3D(2.322, 0, -6.2814, 0, 6.6969, 0, 6.2814, 0, 2.322, 65.9294, 3.472, -41.117)
 
-[node name="Rocks20" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks20" parent="Scenery" unique_id=2091150247 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-1.3406, 0, 7.0333, 0, 7.1599, 0, -7.0333, 0, -1.3406, 84.7668, 0.5, -157.2017)
 
-[node name="Rocks21" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks21" parent="Scenery" unique_id=2131608038 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-6.518, 0, -2.5715, 0, 7.0069, 0, 2.5715, 0, -6.518, -1.2842, 5.8269, -22.1219)
 
-[node name="Rocks22" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks22" parent="Scenery" unique_id=1796012861 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-5.9583, 0, -1.5732, 0, 6.1625, 0, 1.5732, 0, -5.9583, -53.3463, 12.6324, -80.96)
 
-[node name="Rocks23" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks23" parent="Scenery" unique_id=1747542487 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-4.1266, 0, -4.6355, 0, 6.2062, 0, 4.6355, 0, -4.1266, 74.6391, 0.5, -14.8219)
 
-[node name="Rocks24" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks24" parent="Scenery" unique_id=1921647078 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-6.4485, 0, -1.8236, 0, 6.7014, 0, 1.8236, 0, -6.4485, 75.3424, 0.5, -143.8992)
 
-[node name="Rocks25" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks25" parent="Scenery" unique_id=877803880 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-4.3024, 0, 4.0966, 0, 5.9408, 0, -4.0966, 0, -4.3024, -62.8103, 12.8356, -92.8946)
 
-[node name="Rocks26" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks26" parent="Scenery" unique_id=512549075 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-1.6756, 0, 5.4476, 0, 5.6995, 0, -5.4476, 0, -1.6756, -29.0777, 17.687, -60.4751)
 
-[node name="Rocks27" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks27" parent="Scenery" unique_id=380088604 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-5.157, 0, -5.4372, 0, 7.4938, 0, 5.4372, 0, -5.157, -48.5269, 26.104, -125.8722)
 
-[node name="Rocks28" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks28" parent="Scenery" unique_id=184404259 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-1.9501, 0, 4.8104, 0, 5.1906, 0, -4.8104, 0, -1.9501, 57.255, 4.4969, -20.9122)
 
-[node name="Rocks29" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks29" parent="Scenery" unique_id=758278512 instance=ExtResource("scn_rocks")]
 transform = Transform3D(4.4424, 0, -0.1137, 0, 4.4438, 0, 0.1137, 0, 4.4424, -74.5663, 10.4303, -87.6281)
 
-[node name="Rocks30" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks30" parent="Scenery" unique_id=553169027 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-4.2312, 0, -5.224, 0, 6.7226, 0, 5.224, 0, -4.2312, 23.7873, 57.3555, -155.9527)
 
-[node name="Rocks31" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks31" parent="Scenery" unique_id=519081171 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-4.7525, 0, -4.1458, 0, 6.3067, 0, 4.1458, 0, -4.7525, -71.8793, 13.1558, -66.6106)
 
-[node name="Rocks32" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks32" parent="Scenery" unique_id=33277470 instance=ExtResource("scn_rocks")]
 transform = Transform3D(6.7466, 0, -0.2308, 0, 6.7505, 0, 0.2308, 0, 6.7466, 87.929, 0.5, -7.5974)
 
-[node name="Rocks33" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks33" parent="Scenery" unique_id=1519091030 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-2.3376, 0, 6.6673, 0, 7.0653, 0, -6.6673, 0, -2.3376, -27.3873, 11.674, -39.559)
 
-[node name="Rocks34" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks34" parent="Scenery" unique_id=1916869826 instance=ExtResource("scn_rocks")]
 transform = Transform3D(4.0737, 0, 6.4892, 0, 7.6619, 0, -6.4892, 0, 4.0737, -6.5347, 6.6434, -33.5224)
 
-[node name="Rocks35" parent="Scenery" instance=ExtResource("scn_rocks")]
+[node name="Rocks35" parent="Scenery" unique_id=152207292 instance=ExtResource("scn_rocks")]
 transform = Transform3D(-0.4188, 0, 7.9271, 0, 7.9382, 0, -7.9271, 0, -0.4188, 89.7623, 0.5, -66.8589)
 
 [editable path="HikingMountainShort"]

@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://dmg4ygqi14dtn" path="res://art/Hiker.glb" id="2_a6841"]
 [ext_resource type="Script" uid="uid://udyjp28af5ew" path="res://scripts/teammate_markers.gd" id="3_e52ts"]
 [ext_resource type="Script" uid="uid://c2mom8yrybtmm" path="res://scripts/action_buttons.gd" id="4_1ny25"]
+[ext_resource type="Texture2D" uid="uid://b7xnktexr88sq" path="res://art/ui/warning_landslide.png" id="5_qua6x"]
+[ext_resource type="Script" uid="uid://7qbbhxdqs1aa" path="res://scripts/landslide_warning.gd" id="6_wqrku"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 radius = 0.4
@@ -31,6 +33,17 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath(".:anim_state")
 properties/6/spawn = true
 properties/6/replication_mode = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yf5fn"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [sub_resource type="BoxMesh" id="BoxMesh_g4v7s"]
 size = Vector3(0.06, 0.06, 1)
@@ -129,31 +142,39 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD" unique_id=634338007]
+[node name="StatsCard" type="PanelContainer" parent="HUD" unique_id=1507802988]
 custom_minimum_size = Vector2(300, 0)
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -40.0
-offset_right = 40.0
+offset_left = 20.0
+offset_top = -86.0
+offset_right = 320.0
+offset_bottom = -20.0
 grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_yf5fn")
 
-[node name="HPLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1754277450]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/StatsCard" unique_id=634338007]
+layout_mode = 2
+
+[node name="HPLabel" type="Label" parent="HUD/StatsCard/VBoxContainer" unique_id=1754277450]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "HP"
 
-[node name="HPBar" type="ProgressBar" parent="HUD/VBoxContainer" unique_id=690701719]
+[node name="HPBar" type="ProgressBar" parent="HUD/StatsCard/VBoxContainer" unique_id=690701719]
 unique_name_in_owner = true
 layout_mode = 2
 show_percentage = false
 
-[node name="StaminaLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1065952174]
+[node name="StaminaLabel" type="Label" parent="HUD/StatsCard/VBoxContainer" unique_id=1065952174]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Stamina"
 
-[node name="StaminaBar" type="ProgressBar" parent="HUD/VBoxContainer" unique_id=1879388814]
+[node name="StaminaBar" type="ProgressBar" parent="HUD/StatsCard/VBoxContainer" unique_id=1879388814]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 80.0
@@ -176,6 +197,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_1ny25")
+
+[node name="LandslideWarning" type="TextureRect" parent="HUD" unique_id=1043213713]
+custom_maximum_size = Vector2(200, 200)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 20.0
+offset_right = 100.0
+offset_bottom = 220.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("5_qua6x")
+script = ExtResource("6_wqrku")
 
 [node name="Rope" type="MeshInstance3D" parent="." unique_id=1476435215]
 top_level = true

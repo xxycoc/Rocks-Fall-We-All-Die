@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dv42j6vmtpx71"
-path="res://.godot/imported/PineTreeSmol_PineTree.png-27088fd61dddef7a198290d8453b4e55.ctex"
+path.s3tc="res://.godot/imported/PineTreeSmol_PineTree.png-27088fd61dddef7a198290d8453b4e55.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "00d1989897a1d163a67f1b87f1246bc3"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://art/PineTreeSmol_PineTree.png"
-dest_files=["res://.godot/imported/PineTreeSmol_PineTree.png-27088fd61dddef7a198290d8453b4e55.ctex"]
+dest_files=["res://.godot/imported/PineTreeSmol_PineTree.png-27088fd61dddef7a198290d8453b4e55.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0
