@@ -146,6 +146,9 @@ _data = {
 }
 point_count = 239
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0ld40"]
+albedo_color = Color(0, 0, 0, 1)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_yf5fn"]
 size = Vector3(200, 400, 1)
 
@@ -513,6 +516,21 @@ text = "Quit to Lobby"
 curve = SubResource("Curve3D_trail")
 script = ExtResource("10_trail")
 
+[node name="TrailLine" type="CSGPolygon3D" parent="." unique_id=327795441]
+polygon = PackedVector2Array(-0.4, 0, 0.4, 0, 0.4, 0.05, -0.4, 0.05)
+mode = 2
+path_node = NodePath("../Trail")
+path_interval_type = 0
+path_interval = 0.5
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = SubResource("StandardMaterial3D_0ld40")
+
 [node name="MenuMusic" type="AudioStreamPlayer" parent="." unique_id=451319468]
 unique_name_in_owner = true
 stream = ExtResource("8_85g3d")
@@ -618,6 +636,7 @@ mesh = SubResource("CylinderMesh_jkv2x")
 surface_material_override/0 = SubResource("StandardMaterial3D_jbj1t")
 
 [node name="Scenery" type="Node3D" parent="." unique_id=1887402568]
+metadata/_edit_lock_ = true
 
 [node name="Pine1" parent="Scenery" unique_id=1207856 instance=ExtResource("scn_pine")]
 transform = Transform3D(-0.7909, 0, -0.2075, 0, 0.8177, 0, 0.2075, 0, -0.7909, -81.0397, 12.8752, -129.9469)
