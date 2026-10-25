@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dsihnv603ddys" path="res://scripts/hiker.gd" id="1_4h8dk"]
 [ext_resource type="PackedScene" uid="uid://dmg4ygqi14dtn" path="res://art/Hiker.glb" id="2_a6841"]
+[ext_resource type="Script" uid="uid://udyjp28af5ew" path="res://scripts/teammate_markers.gd" id="3_e52ts"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 radius = 0.4
@@ -155,8 +156,17 @@ text = "Stamina"
 [node name="StaminaBar" type="ProgressBar" parent="HUD/VBoxContainer" unique_id=1879388814]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 50.0
+max_value = 80.0
 show_percentage = false
+
+[node name="TeammateMarkers" type="Control" parent="HUD" unique_id=594594834]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_e52ts")
 
 [node name="Rope" type="MeshInstance3D" parent="." unique_id=1476435215]
 top_level = true

@@ -64,6 +64,10 @@ var friction_multiplier := 1.0
 @export var hp := 100
 var is_dummy := false
 
+## Fog (hikers only; the Mountain's view stays clear)
+@export var fog_density := 0.035                  # higher = thicker; ~0.035 hides things past ~40 m
+@export var fog_color := Color(0.76, 0.81, 0.84)  # pale grey-blue mountain mist
+
 var stamina := 0.0
 var is_crawling := false
 var _last_height := 0.0
@@ -76,7 +80,11 @@ var _slide_direction := Vector3.ZERO
 
 ## "alive", "unconscious" or "eliminated". Exported so it can be synced.
 @export var state := "alive"
-var knockout_time_left := 0.0
+@export var knockout_time_left := 0.0
+
+var _down_since := 0.0          # when THIS machine saw the hiker go down
+var _last_seen_state := "alive"
+
 var _rescue_target: Node3D = null
 var _rescue_progress := 0.0
 
@@ -143,6 +151,7 @@ func _ready() -> void:
 	set_process_unhandled_input(is_mine)
 	if is_mine:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		_setup_fog()
 	stamina = start_stamina
 	_last_height = global_position.y
 	# Find the model's animations and make the looping ones loop
@@ -317,6 +326,11 @@ func spend_stamina(amount: float) -> bool:
 	return true
 
 func _process(_delta: float) -> void:
+		# Every machine starts its own knockout countdown when it sees the hiker go down
+	if state == "unconscious" and _last_seen_state != "unconscious":
+		_down_since = Time.get_ticks_msec() / 1000.0
+	_last_seen_state = state
+	
 	# Visuals run on every machine, using the synced state.
 	# Unconscious = lying on their side. Escaped/eliminated = hidden.
 	# The owner decides the animation; every machine plays it
@@ -655,3 +669,23 @@ func _fit_body_to_ground() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func _sfx(sound: String) -> void:
 	Sound.play_at(sound, global_position)
+
+## Seconds until this downed hiker is eliminated. Works on every machine.
+func get_knockout_left() -> float:
+	if state != "unconscious":
+		return 0.0
+	return maxf(knockout_time - (Time.get_ticks_msec() / 1000.0 - _down_since), 0.0)
+
+# ---------- Fog ----------
+
+## Give only this player's camera a foggy copy of the level's environment.
+## The Mountain's camera keeps the clear one.
+func _setup_fog() -> void:
+	var world_env := get_world_3d().environment
+	var env: Environment = world_env.duplicate() if world_env else Environment.new()
+	env.fog_enabled = true
+	env.fog_mode = Environment.FOG_MODE_EXPONENTIAL
+	env.fog_density = fog_density
+	env.fog_light_color = fog_color
+	env.fog_sky_affect = 1.0   # the sky disappears into the mist too
+	camera.environment = env
