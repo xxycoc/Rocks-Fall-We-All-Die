@@ -15,3 +15,4 @@ Rules: no AI-generated art or audio. Avoid NC/ND licenses. CC-BY needs this cred
 | Male Grunt/Yelling sounds (3grunt1, 3grunt6, 1yell3) | audio/hiker_hurt.ogg, audio/hiker_unconscious.ogg, audio/hiker_die.ogg | HaelDB | CC0 | https://opengameart.org/content/male-gruntyelling-sounds |
 | Falling Rock (trimmed to 1.8 s) | audio/landslide_hit.ogg | spookymodem | CC-BY 3.0 | https://opengameart.org/content/falling-rock |
 | rock_breaking | audio/landslide_rumble.ogg | Blender Foundation (Yo Frankie!) | CC-BY 3.0 | https://opengameart.org/content/rockbreaking |
+| Tornado Siren II (trimmed to 2 s) | audio/landslide_siren.ogg | Delilah (SoundBible.com) | CC-BY 3.0 | https://soundbible.com/1937-Tornado-Siren-II.html |
