@@ -39,7 +39,11 @@ func _draw() -> void:
 		if down:
 			var body_middle: Vector3 = (hiker_pos + hiker.drag_point.global_position) / 2.0
 			world_pos = body_middle + Vector3.UP * DOWN_HEIGHT
-		var behind := cam.is_position_behind(world_pos)
+		# How far in front of the camera the point is (negative = behind)
+		var depth := -(cam.global_transform.affine_inverse() * world_pos).z
+		if absf(depth) < 0.05:
+			continue   # exactly level with the lens: can't be placed on screen, skip this frame
+		var behind := depth < 0.0
 		var pos := cam.unproject_position(world_pos)
 		var on_screen := not behind and safe.has_point(pos)
 		if on_screen:

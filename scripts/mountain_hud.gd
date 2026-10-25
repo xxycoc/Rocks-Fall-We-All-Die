@@ -37,7 +37,8 @@ func _ready() -> void:
 	_mark.anchor_right = _mark.anchor_left
 
 	_style_normal.bg_color = Color(0.1, 0.1, 0.12, 0.85)
-	_style_normal.set_content_margin_all(8)
+	_style_normal.set_content_margin_all(12)   # a bit more room so text clears the rounded corners
+	_style_normal.set_corner_radius_all(20)
 	_style_selected = _style_normal.duplicate()
 	_style_selected.border_color = Color(1.0, 0.85, 0.2)
 	_style_selected.set_border_width_all(3)
@@ -85,6 +86,15 @@ func _ready() -> void:
 	$Root.add_child(_message)
 	$Root.move_child(_message, 0)
 
+	# Rounded energy bar
+	var bar_bg := StyleBoxFlat.new()
+	bar_bg.bg_color = Color(0.1, 0.1, 0.12, 0.85)
+	bar_bg.set_corner_radius_all(20)
+	var bar_fill := StyleBoxFlat.new()
+	bar_fill.bg_color = Color(0.88, 0.48, 0.31)
+	bar_fill.set_corner_radius_all(20)
+	_bar.add_theme_stylebox_override("background", bar_bg)
+	_bar.add_theme_stylebox_override("fill", bar_fill)
 
 ## Says briefly why a click did nothing.
 func _flash(text: String) -> void:

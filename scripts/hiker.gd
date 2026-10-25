@@ -52,6 +52,11 @@ extends CharacterBody3D
 @export var anim_walk := "Walk"
 @export var anim_crawl := "Crawl"
 @export var anim_dead := "Dead"
+@export var anim_unconscious := "Unconscious"
+@export var anim_slide := "Slide"
+@export var anim_revive := "Revive"
+@export var anim_cheer := "Cheer"
+@export var cheer_time := 2.5   # seconds an escaped hiker stays visible, cheering
 
 ## The animation everyone should see. Set by the owner, synced to others.
 @export var anim_state := "Idle"
@@ -84,6 +89,8 @@ var _slide_direction := Vector3.ZERO
 
 var _down_since := 0.0          # when THIS machine saw the hiker go down
 var _last_seen_state := "alive"
+var _revive_anim_left := 0.0    # owner only: time left in the stand-up animation
+var _extracted_since := 0.0     # when THIS machine saw the hiker escape
 
 var _rescue_target: Node3D = null
 var _rescue_progress := 0.0
@@ -157,7 +164,7 @@ func _ready() -> void:
 	# Find the model's animations and make the looping ones loop
 	anim_player = model.find_child("AnimationPlayer", true, false)
 	if anim_player:
-		for anim_name in [anim_idle, anim_walk, anim_crawl]:
+		for anim_name in [anim_idle, anim_walk, anim_crawl, anim_unconscious, anim_cheer, anim_revive]:
 			if anim_player.has_animation(anim_name):
 				anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_LINEAR
 		_body_visual = anim_player.get_parent()
@@ -202,15 +209,26 @@ func _physics_process(delta: float) -> void:
 	var forward := Vector3(-cam_basis.z.x, 0, -cam_basis.z.z).normalized()
 	var right := Vector3(cam_basis.x.x, 0, cam_basis.x.z).normalized()
 	var direction := (right * input.x + forward * -input.y).limit_length(1.0)
+	_revive_anim_left = maxf(_revive_anim_left - delta, 0.0)
+	if _revive_anim_left > 0.0:
+		direction = Vector3.ZERO   # can't walk while standing back up
 
 	_update_rescue(delta)
 	_update_carry()
 	if not is_dummy and Input.is_action_just_pressed("carry"):
 		_toggle_carry()
 	
-	if _rescue_progress > 0.0:
-		direction = Vector3.ZERO   # stand still while rescuing
-
+	if _rescue_progress > 0.0 and _rescue_target:
+		direction = Vector3.ZERO   # no walking while rescuing
+		# Move on top of the downed teammate's body and face it
+		var body_middle: Vector3 = (_rescue_target.global_position + _rescue_target.drag_point.global_position) / 2.0
+		var to_body := body_middle - global_position
+		to_body.y = 0.0
+		if to_body.length() > 0.1:
+			global_position += to_body.normalized() * minf(to_body.length(), 3.0 * delta)
+			var face_yaw := atan2(-to_body.x, -to_body.z)
+			model.rotation.y = lerp_angle(model.rotation.y, face_yaw, 10.0 * delta)
+			
 	_slide_cooldown_left = max(_slide_cooldown_left - delta, 0.0)
 	if not is_dummy and Input.is_action_just_pressed("slide"):
 		_try_slide(direction)
@@ -230,8 +248,6 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, target.x, accel * delta)
 		velocity.z = move_toward(velocity.z, target.z, accel * delta)
 		
-	# Squash the model while sliding so it looks like a dive
-	model.scale.y = 0.6 if _slide_time_left > 0.0 else 1.0
 	# On mud, the slope pulls you downhill.
 	if friction_multiplier < 1.0 and is_on_floor():
 		var downhill := Vector3.DOWN.slide(get_floor_normal()).normalized()
@@ -327,8 +343,12 @@ func spend_stamina(amount: float) -> bool:
 
 func _process(_delta: float) -> void:
 		# Every machine starts its own knockout countdown when it sees the hiker go down
-	if state == "unconscious" and _last_seen_state != "unconscious":
-		_down_since = Time.get_ticks_msec() / 1000.0
+	var now := Time.get_ticks_msec() / 1000.0
+	if state != _last_seen_state:
+		if state == "unconscious":
+			_down_since = now
+		elif state == "extracted":
+			_extracted_since = now
 	_last_seen_state = state
 	
 	# Visuals run on every machine, using the synced state.
@@ -339,7 +359,8 @@ func _process(_delta: float) -> void:
 	_play_anim(anim_state)
 	
 	# Unconscious and dead bodies lie on the ground. Escaped hikers are hidden.
-	model.visible = state != "extracted"
+	# Escaped hikers cheer for a moment, then disappear into the chopper
+	model.visible = state != "extracted" or now - _extracted_since < cheer_time
 	# Dead or escaped hikers shouldn't block anyone
 	$CollisionShape3D.disabled = state == "eliminated" or state == "extracted"
 	_fit_body_to_ground()
@@ -364,7 +385,6 @@ func _process(_delta: float) -> void:
 			var b := Basis.looking_at(to - from, Vector3.UP)
 			b.z *= dist   # stretch the 1 m box to the full length
 			rope.global_transform = Transform3D(b, (from + to) / 2.0)
-
 	# Everything below is this player's own HUD
 	if not hud.visible:
 		return
@@ -382,15 +402,8 @@ func _process(_delta: float) -> void:
 		_:
 			hp_label.text = "HP  %d / 100" % hp
 
-	rescue_label.visible = state == "alive" and (_rescue_target != null or carrying != null)
-	if rescue_label.visible:
-		if carrying != null:
-			rescue_label.text = "Dragging a teammate · G to let go"
-		elif stamina < rescue_cost:
-			rescue_label.text = "G to drag · need %d stamina to rescue" % rescue_cost
-		else:
-			rescue_label.text = "Hold F to rescue (%.1f / %.1f s) · G to drag" % [_rescue_progress, rescue_hold_time]
-			
+	rescue_label.visible = false   # replaced by the floating Rescue / Drag buttons
+	
 # ---------- Slide-Dodge ----------
 
 func _try_slide(direction: Vector3) -> void:
@@ -445,6 +458,8 @@ func revive() -> void:
 		return
 	state = "alive"
 	hp = revive_hp
+	if anim_player and anim_player.has_animation(anim_revive):
+		_revive_anim_left = anim_player.get_animation(anim_revive).length
 	GameManager.report_state.rpc_id(1, name.to_int(), "alive")
 
 # ---------- Slopes ----------
@@ -563,10 +578,17 @@ func reset_for_round(spawn_pos: Vector3) -> void:
 
 ## Owner only: which animation fits what the hiker is doing right now.
 func _pick_anim() -> String:
-	if state == "unconscious" or state == "eliminated":
-		return anim_dead
-	if state != "alive":
-		return anim_idle
+	match state:
+		"unconscious":
+			return anim_unconscious
+		"eliminated":
+			return anim_dead
+		"extracted":
+			return anim_cheer
+	if _rescue_progress > 0.0:
+		return anim_revive   # kneeling over a teammate, slapping them awake
+	if _slide_time_left > 0.0:
+		return anim_slide
 	if is_crawling:
 		return anim_crawl   # stay on all fours while exhausted, even when stopped
 	var moving := Vector2(velocity.x, velocity.z).length() > 0.3

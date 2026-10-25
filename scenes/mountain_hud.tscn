@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://qn28j1r50pr8"]
 
-[ext_resource type="Script" path="res://scripts/mountain_hud.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://cq5gteyo1kyc8" path="res://scripts/mountain_hud.gd" id="1_hud"]
 
-[node name="MountainHUD" type="CanvasLayer"]
+[node name="MountainHUD" type="CanvasLayer" unique_id=1467690174]
 script = ExtResource("1_hud")
 
-[node name="Root" type="VBoxContainer" parent="."]
+[node name="Root" type="VBoxContainer" parent="." unique_id=860464948]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -19,13 +19,13 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="EnergyLabel" type="Label" parent="Root"]
+[node name="EnergyLabel" type="Label" parent="Root" unique_id=217668187]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Energy 10 / 30"
 horizontal_alignment = 1
 
-[node name="EnergyBar" type="ProgressBar" parent="Root"]
+[node name="EnergyBar" type="ProgressBar" parent="Root" unique_id=72804268]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
@@ -34,9 +34,10 @@ max_value = 30.0
 value = 10.0
 show_percentage = false
 
-[node name="Mark" type="ColorRect" parent="Root/EnergyBar"]
+[node name="Mark" type="ColorRect" parent="Root/EnergyBar" unique_id=1832338406]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = -1
 anchor_left = 0.667
 anchor_right = 0.667
 anchor_bottom = 1.0
@@ -47,7 +48,7 @@ offset_bottom = 4.0
 mouse_filter = 2
 color = Color(1, 0.85, 0.2, 1)
 
-[node name="Slots" type="HBoxContainer" parent="Root"]
+[node name="Slots" type="HBoxContainer" parent="Root" unique_id=1426707472]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
